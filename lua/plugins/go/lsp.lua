@@ -14,7 +14,6 @@ return {
       },
     },
   },
-
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -47,28 +46,6 @@ return {
             },
           },
         },
-      },
-      setup = {
-        gopls = function(_, _)
-          Snacks.util.lsp.on({ name = "gopls" }, function(_, client)
-            if not client.server_capabilities.semanticTokensProvider then
-              local caps = client.config.capabilities
-              local semantic = caps
-                  and caps.textDocument
-                  and caps.textDocument.semanticTokens
-              if semantic and semantic.tokenTypes then
-                client.server_capabilities.semanticTokensProvider = {
-                  full = true,
-                  legend = {
-                    tokenTypes = semantic.tokenTypes,
-                    tokenModifiers = semantic.tokenModifiers,
-                  },
-                  range = true,
-                }
-              end
-            end
-          end)
-        end,
       },
     },
   },
