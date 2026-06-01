@@ -2,7 +2,7 @@ return {
   {
     "nvim-neotest/neotest",
     dependencies = {
-      { "nvim-neotest/neotest-golang" },
+      { "fredrikaverpil/neotest-golang" },
       { "nvim-neotest/nvim-nio" },
       { "nvim-lua/plenary.nvim" },
     },
