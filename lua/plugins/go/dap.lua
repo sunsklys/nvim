@@ -6,9 +6,9 @@ return {
       { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
     },
     keys = {
-      { "<leader>db", "<cmd>DapToggleBreakpoint<CR>", desc = "切换断点" },
-      { "<leader>dc", "<cmd>DapContinue<CR>", desc = "继续调试" },
-      { "<leader>du", "<cmd>lua require('dapui').toggle()<CR>", desc = "调试界面" },
+      { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "切换断点" },
+      { "<leader>dc", function() require("dap").continue() end, desc = "继续调试" },
+      { "<leader>du", function() require("dapui").toggle() end, desc = "调试界面" },
     },
   },
 }

@@ -14,22 +14,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.opt.scrolloff = 8
-vim.opt.sidescrolloff = 8
-vim.opt.updatetime = 200
-vim.opt.confirm = true
-vim.opt.wrap = true
-vim.opt.linebreak = true
-
-vim.api.nvim_create_autocmd("BufEnter", {
-  callback = function()
-    if vim.bo.buftype == "" then
-      vim.opt_local.wrap = true
-      vim.opt_local.linebreak = true
-    end
-  end,
-})
-
 require("lazy").setup({
   spec = {
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
