@@ -1,4 +1,4 @@
-local opencode_opts = { win = { position = "right", width = 0.4 } }
+local opencode_opts = { win = { position = "right", width = 0.3 } }
 
 local function send_to_opencode(cmd)
   local term = Snacks.terminal.get("opencode", opencode_opts)
