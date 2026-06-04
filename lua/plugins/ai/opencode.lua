@@ -20,12 +20,7 @@ return {
       {
         "<leader>oo",
         function()
-          local term = Snacks.terminal.toggle("opencode", opencode_opts)
-          if term and term.buf then
-            local opts = { buffer = term.buf, noremap = true, silent = true }
-            vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-w>h]], opts)
-            vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-w>l]], opts)
-          end
+          Snacks.terminal.toggle("opencode", opencode_opts)
         end,
         mode = { "n", "t" },
         desc = "切换 OpenCode",

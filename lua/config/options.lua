@@ -1,18 +1,2 @@
 vim.opt.scrolloff = 8
-vim.opt.sidescrolloff = 8
-vim.opt.updatetime = 200
-vim.opt.confirm = true
 vim.opt.wrap = true
-vim.opt.linebreak = true
-vim.opt.clipboard = "unnamedplus"
-vim.opt.undofile = true
-vim.opt.smartcase = true
-vim.opt.splitright = true
-vim.opt.splitbelow = true
-
-vim.diagnostic.config({
-  virtual_text = {
-    prefix = "●",
-    spacing = 4,
-  },
-})
