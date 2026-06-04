@@ -9,3 +9,10 @@ vim.opt.undofile = true
 vim.opt.smartcase = true
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = "●",
+    spacing = 4,
+  },
+})

@@ -21,13 +21,15 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.markdown" },
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.vue" },
+    { import = "lazyvim.plugins.extras.lang.json" },
+    { import = "lazyvim.plugins.extras.lsp.none-ls" },
     { import = "plugins.go" },
     { import = "plugins.ai" },
     { import = "plugins.ui" },
   },
   defaults = { lazy = false, version = false },
   install = { colorscheme = { "tokyonight", "habamax" } },
-  checker = { enabled = true, notify = false },
+  checker = { enabled = true, notify = true },
   performance = {
     rtp = {
       disabled_plugins = { "gzip", "matchit", "netrwPlugin", "rplugin", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
