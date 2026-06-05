@@ -10,8 +10,5 @@ return {
       { "<leader>dc", function() require("dap").continue() end, desc = "继续调试" },
       { "<leader>du", function() require("dapui").toggle() end, desc = "调试界面" },
     },
-    config = function()
-      require("dapui").setup()
-    end,
   },
 }

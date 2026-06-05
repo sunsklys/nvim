@@ -5,10 +5,6 @@ return {
       ensure_installed = {
         "stylua",
         "shfmt",
-        "golangci-lint",
-        "gomodifytags",
-        "impl",
-        "delve",
       },
     },
   },
