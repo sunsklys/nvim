@@ -8,9 +8,7 @@ return {
             gopls = {
               analyses = {
                 shadow = true,
-                fieldalignment = true,
               },
-              vulncheck = "Imports",
             },
           },
         },
