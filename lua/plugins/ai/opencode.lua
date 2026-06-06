@@ -8,8 +8,12 @@ local function send_to_opencode(cmd)
   if not term:win_valid() then
     term:show()
   end
+  -- Re-validate job_id after window show to avoid sending to stale terminal
   vim.defer_fn(function()
-    vim.fn.chansend(vim.b[term.buf].terminal_job_id, cmd .. "\n")
+    local job_id = vim.b[term.buf] and vim.b[term.buf].terminal_job_id
+    if job_id then
+      vim.fn.chansend(job_id, cmd .. "\n")
+    end
   end, 100)
 end
 

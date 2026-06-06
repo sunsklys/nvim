@@ -5,10 +5,13 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost", "TextChanged" }, {
+vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost" }, {
   callback = function()
-    if vim.bo.buftype == "" and vim.bo.modified and vim.fn.expand("%") ~= "" then
-      vim.cmd("silent! update")
-    end
+    local buf = vim.api.nvim_get_current_buf()
+    if vim.bo[buf].buftype ~= "" then return end
+    if not vim.bo[buf].modified then return end
+    if vim.fn.expand("%") == "" then return end
+    if vim.fn.pumvisible() == 1 then return end
+    vim.cmd("silent! update")
   end,
 })
