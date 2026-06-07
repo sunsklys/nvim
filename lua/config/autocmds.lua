@@ -1,13 +1,9 @@
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "markdown", "text", "gitcommit" },
-  callback = function()
-    vim.opt_local.wrap = true
-  end,
-})
-
 local save_timer = nil
+local group = vim.api.nvim_create_augroup("autosave", { clear = true })
 vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost" }, {
-  callback = function()
+  group = group,
+  callback = function(ev)
+    local buf = ev.buf
     if save_timer then
       save_timer:close()
     end
@@ -16,14 +12,16 @@ vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost" }, {
       save_timer:close()
       save_timer = nil
       vim.schedule(function()
-        local buf = vim.api.nvim_get_current_buf()
+        if not vim.api.nvim_buf_is_valid(buf) then
+          return
+        end
         if vim.bo[buf].buftype ~= "" then
           return
         end
         if not vim.bo[buf].modified then
           return
         end
-        if vim.fn.expand("%") == "" then
+        if vim.api.nvim_buf_get_name(buf) == "" then
           return
         end
         if vim.fn.pumvisible() == 1 then

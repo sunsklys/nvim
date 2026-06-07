@@ -32,16 +32,19 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.editor.snacks_picker" },
     { import = "lazyvim.plugins.extras.editor.inc-rename" },
     { import = "lazyvim.plugins.extras.editor.dial" },
+    { import = "lazyvim.plugins.extras.editor.outline" },
+    { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
     { import = "plugins.go" },
     { import = "plugins.ai" },
     { import = "plugins.ui" },
+    { "catppuccin", enabled = false },
   },
   defaults = { version = false },
   install = { colorscheme = { "tokyonight", "habamax" } },
   checker = { enabled = true, notify = false },
   performance = {
     rtp = {
-      disabled_plugins = { "gzip", "matchit", "netrwPlugin", "rplugin", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
+      disabled_plugins = { "gzip", "netrwPlugin", "rplugin", "tarPlugin", "tohtml", "tutor", "zipPlugin", "matchparen" },
     },
   },
 })

@@ -5,8 +5,8 @@ return {
       picker = {
         sources = {
           explorer = {
-            hidden = true,
-            ignored = true,
+            hidden = false,
+            ignored = false,
           },
         },
       },
