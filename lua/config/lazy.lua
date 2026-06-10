@@ -41,7 +41,6 @@ require("lazy").setup({
     { import = "plugins.go" },
     { import = "plugins.ai" },
     { import = "plugins.ui" },
-    { "catppuccin", enabled = false },
   },
   defaults = { version = false },
   install = { colorscheme = { "tokyonight", "habamax" } },
