@@ -1,74 +1,213 @@
-local opencode_opts = { win = { position = "right", width = 0.3 } }
+-- NickvanDyke/opencode.nvim - 官方推荐的 OpenCode neovim 集成
+-- 替代手写 Snacks.terminal 方案，提供：
+-- - 自动 reload edit 后的 buffer
+-- - 编辑权限请求时弹 diff 视图（da 接受 / dr 拒绝 / dp/do 单 hunk）
+-- - 上下文占位符 @this/@buffer/@diagnostics/@quickfix/@marks
+-- - 内置 prompts (explain/fix/review/optimize/test/document/implement/diagnostics)
+-- - SSE 事件流 (OpencodeEvent:*)
 
-local function send_to_opencode(cmd)
-  local term = Snacks.terminal.get("opencode", opencode_opts)
-  if not (term and term.buf and vim.b[term.buf].terminal_job_id) then
-    return
-  end
-  if not term:win_valid() then
-    term:show()
-  end
-  -- Re-validate job_id after window show to avoid sending to stale terminal
-  vim.defer_fn(function()
-    local job_id = vim.b[term.buf] and vim.b[term.buf].terminal_job_id
-    if job_id then
-      vim.fn.chansend(job_id, cmd .. "\n")
-    end
-  end, 100)
-end
+local opencode_cmd = "opencode --port"
+local snacks_terminal_opts = {
+  win = { position = "right", width = 0.3, enter = false },
+}
 
 return {
   {
-    "folke/snacks.nvim",
+    "nickjvandyke/opencode.nvim",
+    version = "*",
+    dependencies = { "folke/snacks.nvim" },
+    init = function()
+      vim.o.autoread = true -- 必须，让 events.reload 自动重载 buffer
+    end,
+    config = function()
+      ---@type opencode.Opts
+      vim.g.opencode_opts = {
+        server = {
+          start = function()
+            require("snacks.terminal").open(opencode_cmd, snacks_terminal_opts)
+          end,
+        },
+      }
+    end,
     keys = {
+      -- 终端切换（沿用原 <leader>oo 习惯）
       {
         "<leader>oo",
         function()
-          Snacks.terminal.toggle("opencode", opencode_opts)
+          require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
         end,
-        mode = { "n", "t" },
+        mode = { "n" },
         desc = "切换 OpenCode",
       },
+      -- 核心交互
       {
-        "<leader>os",
+        "<leader>oa",
         function()
-          local filepath = vim.fn.expand("%:p")
-          if filepath == "" then return end
-          local start_line = vim.fn.line("v")
-          local end_line = vim.fn.line(".")
-          if start_line > end_line then
-            start_line, end_line = end_line, start_line
-          end
-          send_to_opencode(string.format("@file:%s:%d-%d", filepath, start_line, end_line))
+          require("opencode").ask("@this: ")
         end,
-        mode = "v",
-        desc = "发送选中行",
+        mode = { "n", "x" },
+        desc = "询问 OpenCode (输入框)",
+      },
+      {
+        "<leader>op",
+        function()
+          require("opencode").select()
+        end,
+        mode = { "n", "x" },
+        desc = "选择预置 prompt",
+      },
+      -- 内置 prompts 一键触发
+      {
+        "<leader>oe",
+        function()
+          require("opencode").prompt("Explain @this and its context")
+        end,
+        mode = { "n", "x" },
+        desc = "解释当前代码",
+      },
+      {
+        "<leader>or",
+        function()
+          require("opencode").prompt("Review @this for correctness and readability")
+        end,
+        mode = { "n", "x" },
+        desc = "审查当前代码",
       },
       {
         "<leader>of",
         function()
-          local filepath = vim.fn.expand("%:p")
-          if filepath == "" then return end
-          send_to_opencode(string.format("@file:%s:%d", filepath, vim.fn.line(".")))
+          require("opencode").prompt("Fix @diagnostics")
+        end,
+        desc = "修复诊断",
+      },
+      {
+        "<leader>ot",
+        function()
+          require("opencode").prompt("Add tests for @this")
+        end,
+        mode = { "n", "x" },
+        desc = "为当前代码生成测试",
+      },
+      {
+        "<leader>oz",
+        function()
+          require("opencode").prompt("Optimize @this for performance and readability")
+        end,
+        mode = { "n", "x" },
+        desc = "优化当前代码",
+      },
+      {
+        "<leader>od",
+        function()
+          require("opencode").prompt("Add comments documenting @this")
+        end,
+        mode = { "n", "x" },
+        desc = "为当前代码添加注释",
+      },
+      -- Operator + dot-repeat
+      {
+        "go",
+        function()
+          return require("opencode").operator("@this ")
+        end,
+        mode = { "n", "x" },
+        expr = true,
+        desc = "把范围发给 OpenCode",
+      },
+      {
+        "goo",
+        function()
+          return require("opencode").operator("@this ") .. "_"
         end,
         mode = "n",
-        desc = "发送当前行",
+        expr = true,
+        desc = "把整行发给 OpenCode",
+      },
+      -- Session 管理
+      {
+        "<leader>on",
+        function()
+          require("opencode").command("session.new")
+        end,
+        desc = "新建会话",
       },
       {
-        "<leader>oh",
+        "<leader>oS",
         function()
-          Snacks.terminal.toggle(nil, { win = { position = "bottom", height = 15 } })
+          require("opencode").command("session.select")
         end,
-        mode = { "n", "t" },
-        desc = "水平终端",
+        desc = "切换会话",
       },
       {
-        "<leader>ov",
+        "<leader>ou",
         function()
-          Snacks.terminal.toggle(nil, { win = { position = "right", width = 0.4 } })
+          require("opencode").command("session.undo")
         end,
-        mode = { "n", "t" },
-        desc = "垂直终端",
+        desc = "撤销上一步",
+      },
+      {
+        "<leader>oR",
+        function()
+          require("opencode").command("session.redo")
+        end,
+        desc = "重做",
+      },
+      {
+        "<leader>oc",
+        function()
+          require("opencode").command("session.compact")
+        end,
+        desc = "压缩当前会话",
+      },
+      {
+        "<leader>oi",
+        function()
+          require("opencode").command("session.interrupt")
+        end,
+        desc = "中断当前会话",
+      },
+      -- 滚动 OpenCode 输出
+      {
+        "<S-C-u>",
+        function()
+          require("opencode").command("session.half.page.up")
+        end,
+        desc = "向上滚动 OpenCode",
+      },
+      {
+        "<S-C-d>",
+        function()
+          require("opencode").command("session.half.page.down")
+        end,
+        desc = "向下滚动 OpenCode",
+      },
+    },
+  },
+  -- snacks.input/picker 增强 ask()/select() 体验
+  {
+    "folke/snacks.nvim",
+    opts = {
+      input = { enabled = true },
+      picker = {
+        enabled = true,
+        actions = {
+          ---@param picker snacks.Picker
+          opencode_send = function(picker)
+            local items = vim.tbl_map(function(item) ---@param item snacks.picker.Item
+              return item.file
+                  and require("opencode").format({ path = item.file, from = item.pos, to = item.end_pos })
+                or item.text
+            end, picker:selected({ fallback = true }))
+            require("opencode").prompt(table.concat(items, ", ") .. " ")
+          end,
+        },
+        win = {
+          input = {
+            keys = {
+              ["<a-a>"] = { "opencode_send", mode = { "n", "i" } },
+            },
+          },
+        },
       },
     },
   },
