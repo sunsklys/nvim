@@ -134,9 +134,10 @@ return {
       {
         "<leader>oS",
         function()
-          require("opencode").command("session.select")
+          require("opencode").select()
         end,
-        desc = "切换会话",
+        mode = { "n", "x" },
+        desc = "选择会话/命令/prompt",
       },
       {
         "<leader>ou",
