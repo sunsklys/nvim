@@ -41,6 +41,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.editor.refactoring" },
     { import = "plugins.go" },
     { import = "plugins.ai" },
+    { import = "plugins.coding" },
     { import = "plugins.ui" },
     { import = "plugins.editor" },
   },
