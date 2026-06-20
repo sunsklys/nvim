@@ -13,7 +13,7 @@ return {
       -- 查看文件历史（git log 当前文件）
       { "<leader>gV", "<cmd>DiffviewFileHistory %<cr>", desc = "Diffview 文件历史" },
       -- 查看整个仓库历史
-      { "<leader>gL", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview 仓库历史" },
+      { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview 仓库历史" },
       -- 关闭 diffview（回到原 buffer）
       { "<leader>gC", "<cmd>DiffviewClose<cr>", desc = "Diffview 关闭" },
     },
