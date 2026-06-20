@@ -1,4 +1,3 @@
-vim.opt.scrolloff = 8
 vim.g.lazyvim_eslint_auto_format = false
 vim.g.lazyvim_ts_lsp = "vtsls"
 
@@ -14,6 +13,17 @@ vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}/%{expand('%:h:t')}"
 -- 若全角标点需要按 2 列展示，使用 vim.fn.setcellwidths() 精确指定。
 vim.opt.ambiwidth = "single"
 
--- render-markdown.nvim 依赖 conceallevel=2 才能把 |---| 这类语法替换成 │ ─ ┼ 边框
-vim.opt.conceallevel = 2
-vim.opt.concealcursor = ""
+-- 光标上下保留 8 行上下文（LazyVim 默认 4，增加到 8 提升编辑体验）
+vim.opt.scrolloff = 8
+
+-- 长行软换行的视觉优化（适用于 markdown 长段落等 wrap=true 场景）
+-- 配合 LazyVim markdown extra 的 wrap=true + linebreak=true 生效
+-- - breakindent: 延续行与上一行缩进对齐，层次清晰
+-- - showbreak: 延续行前缀标识，明确区分“延续”与“新行”
+-- - breakat: 中文标点也可作为断行点（默认仅英文标点和空格）
+--
+-- 长表格超出窗口宽度时：按 <leader>uw 临时切换为 nowrap，
+-- 再用 zL/zH/zh/zl 水平滚动查看完整表格（sidescrolloff 默认 8）。
+vim.opt.breakindent = true
+vim.opt.showbreak = "↳ "
+vim.opt.breakat = " \t,.;:!?，。、；：！？"
