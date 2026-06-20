@@ -474,7 +474,6 @@ return {
           { "E", desc = "下一个大词尾", mode = { "o", "x", "n" } },
           { "W", desc = "下一个大词", mode = { "o", "x", "n" } },
 
-          -- dashboard keys are translated via snacks dashboard opts override in ui.lua
         },
       },
     },
