@@ -1,0 +1,24 @@
+# lazygit 配置 —— 跟随 nvim dotfiles 仓库迁移
+#
+# 加载方式：~/.zshrc 中设置
+#   export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml"
+# 换电脑只需 clone 本仓库 + 上面一行 zshrc 配置。
+#
+# 在 lazygit 中按 `|` 在两档 diff 之间循环切换（lazygit 0.62+ 内置）。
+
+git:
+  pagers:
+    # 第 1 档（默认）：delta 并排 diff（左右对比 old/new）
+    - pager: delta --paging=never --side-by-side
+    # 第 2 档：delta 单栏（窄屏 / 逐行暂存更紧凑）
+    #   必须显式 --side-by-side=false，否则会继承 ~/.gitconfig 的 [delta] side-by-side=true
+    - pager: delta --paging=never --side-by-side=false
+
+gui:
+  # 收窄左侧文件列表（默认 0.3333），给并排 diff 留更多横向空间
+  sidePanelWidth: 0.2
+
+# 让 lazygit 的 `e` 键用 neovim 打开文件。
+# nvim-remote 预设：从 LazyVim <leader>gg 调起时，文件会在父 nvim 进程中打开（不新开）。
+os:
+  editPreset: 'nvim-remote'
