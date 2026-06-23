@@ -9,12 +9,18 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 
 ### 加载机制
 
-lazygit 默认在 macOS 上从 `~/Library/Application Support/lazygit/config.yml` 读取配置。为了让配置跟随本 dotfiles 仓库，使用 lazygit 内置的 `LG_CONFIG_FILE` 环境变量重定向：
+lazygit 默认在 macOS 上从 `~/Library/Application Support/lazygit/config.yml` 读取配置。为了跟随本 dotfiles 仓库 + 复用 LazyVim 的 tokyonight 主题，用 lazygit 内置的 `LG_CONFIG_FILE` 环境变量加载**两个**配置文件（逗号分隔，后者覆盖前者的同名字段）：
 
 ```zsh
 # ~/.zshrc
-export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml"
+export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml,$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"
 ```
+
+- 第 1 个：本仓库的 `lazygit.yml` —— pager、editPreset、sidePanelWidth、nerdFontsVersion
+- 第 2 个：`tokyonight.nvim` 提供的 lazygit 主题（边框、选中行等颜色，与 LazyVim 视觉一致）
+- 后者路径在 LazyVim 首启后由 lazy.nvim 自动下载，无需手工干预
+
+delta 的 plus/minus 颜色则通过 `~/.gitconfig` 的 `[include]` 引入 `tokyonight.nvim/extras/delta/tokyonight_night.gitconfig`。
 
 ### 功能
 
@@ -29,10 +35,15 @@ export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml"
 
 1. `brew install lazygit git-delta`
 2. `git clone <本仓库> ~/.config/nvim`
-3. 在 `~/.zshrc` 添加：
+3. 首次启动 nvim —— LazyVim 会自动下载 tokyonight.nvim 等插件到 `~/.local/share/nvim/lazy/`
+4. 在 `~/.zshrc` 添加：
    ```zsh
-   export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml"
+   export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml,$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"
    export EDITOR='nvim'   # 让 lazygit、git commit、crontab -e 等 TUI 都用 nvim 打开
    ```
-4. 完事 —— 终端与 LazyVim 内调用的 lazygit 都会自动读取本仓库的配置，
-   按 `e` 键会在父 nvim 进程中打开文件（`nvim-remote` 预设）。
+5. 在 `~/.gitconfig` 添加：
+   ```ini
+   [include]
+       path = ~/.local/share/nvim/lazy/tokyonight.nvim/extras/delta/tokyonight_night.gitconfig
+   ```
+6. 完事 —— lazygit 以 tokyonight 主题渲染、并排 diff、按 `|` 切换单栏、`e` 键在父 nvim 打开文件
