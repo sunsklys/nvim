@@ -20,7 +20,8 @@ export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml,$HOME/.local/share/nvim/la
 - 第 2 个：`tokyonight.nvim` 提供的 lazygit 主题（边框、选中行等颜色，与 LazyVim 视觉一致）
 - 后者路径在 LazyVim 首启后由 lazy.nvim 自动下载，无需手工干预
 
-delta 的 plus/minus 颜色则通过 `~/.gitconfig` 的 `[include]` 引入 `tokyonight.nvim/extras/delta/tokyonight_night.gitconfig`。
+命令行 `git diff` 也走 delta + tokyonight 配色：需在 `~/.gitconfig` 设置 `core.pager = delta` 激活 delta，再通过 `[include]` 引入 `tokyonight.nvim/extras/delta/tokyonight_night.gitconfig`（后者仅含 plus/minus 颜色样式，不激活 delta 不生效）。
+lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.pagers` 直接驱动，不读 `~/.gitconfig`。
 
 ### 功能
 
@@ -45,5 +46,11 @@ delta 的 plus/minus 颜色则通过 `~/.gitconfig` 的 `[include]` 引入 `toky
    ```ini
    [include]
        path = ~/.local/share/nvim/lazy/tokyonight.nvim/extras/delta/tokyonight_night.gitconfig
+   [core]
+       pager = delta                     # 激活 delta，否则上面的 include 颜色不生效
+   [interactive]
+       diffFilter = delta --color-only   # 让 git add -p / git checkout -p 等交互命令也走 delta
+   [delta]
+       navigate = true                   # n / N 在 diff 块之间跳转
    ```
-6. 完事 —— lazygit 以 tokyonight 主题渲染、并排 diff、按 `|` 切换单栏、`e` 键在父 nvim 打开文件
+6. 完事 —— lazygit 以 tokyonight 主题渲染、并排 diff、按 `|` 切换单栏、`e` 键在父 nvim 打开文件；命令行 `git diff` 也走 delta + tokyonight 配色（`n`/`N` 跳 diff 块）
