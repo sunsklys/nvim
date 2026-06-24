@@ -1,4 +1,4 @@
--- NickvanDyke/opencode.nvim - 官方推荐的 OpenCode neovim 集成
+-- nickjvandyke/opencode.nvim - 社区维护的 OpenCode neovim 集成（被官方 ecosystem 收录）
 -- 替代手写 Snacks.terminal 方案，提供：
 -- - 自动 reload edit 后的 buffer
 -- - 编辑权限请求时弹 diff 视图（da 接受 / dr 拒绝 / dp/do 单 hunk）
@@ -17,7 +17,10 @@ return {
     version = "*",
     dependencies = { "folke/snacks.nvim" },
     init = function()
-      vim.o.autoread = true -- 必须，让 events.reload 自动重载 buffer
+      -- 全局副作用：开启 autoread 后【所有】 buffer 在外部被修改时会自动重载。
+      -- opencode.nvim 的 events.reload 依赖此机制接收编辑反馈。
+      -- 副作用是：其他场景（如多个编辑器同时改同一文件）也会触发静默重载。
+      vim.o.autoread = true
     end,
     config = function()
       ---@type opencode.Opts
@@ -181,34 +184,6 @@ return {
           require("opencode").command("session.half.page.down")
         end,
         desc = "向下滚动 OpenCode",
-      },
-    },
-  },
-  -- snacks.input/picker 增强 ask()/select() 体验
-  {
-    "folke/snacks.nvim",
-    opts = {
-      input = { enabled = true },
-      picker = {
-        enabled = true,
-        actions = {
-          ---@param picker snacks.Picker
-          opencode_send = function(picker)
-            local items = vim.tbl_map(function(item) ---@param item snacks.picker.Item
-              return item.file
-                  and require("opencode").format({ path = item.file, from = item.pos, to = item.end_pos })
-                or item.text
-            end, picker:selected({ fallback = true }))
-            require("opencode").prompt(table.concat(items, ", ") .. " ")
-          end,
-        },
-        win = {
-          input = {
-            keys = {
-              ["<a-a>"] = { "opencode_send", mode = { "n", "i" } },
-            },
-          },
-        },
       },
     },
   },

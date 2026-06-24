@@ -25,5 +25,8 @@ vim.opt.scrolloff = 8
 -- 长表格超出窗口宽度时：按 <leader>uw 临时切换为 nowrap，
 -- 再用 zL/zH/zh/zl 水平滚动查看完整表格（sidescrolloff 默认 8）。
 vim.opt.breakindent = true
-vim.opt.showbreak = "↳ "
+-- breakat 是 global-only 选项（:help breakat），无法真正 buffer-local。
+-- 这里全局设为含中文标点，但实际只影响 wrap=true 的场景（markdown 长段落）；
+-- 代码默认 wrap=false 不会走 breakat 逻辑，所以全局设置对代码无可观察影响。
 vim.opt.breakat = " \t,.;:!?，。、；：！？"
+vim.opt.showbreak = "↳ "

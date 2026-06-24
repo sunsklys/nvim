@@ -17,7 +17,8 @@ return {
   -- render-markdown.nvim：buffer 内渲染
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown", "Avante", "codecompanion", "copilot-chat" },
+    -- 已转用 opencode.nvim，移除 Avante/codecompanion/copilot-chat 三个未装插件的 ft
+    ft = { "markdown" },
     opts = function(_, opts)
       -- 表格圆角边框（LazyVim/插件默认 preset="none" 无圆角）
       opts.pipe_table = vim.tbl_deep_extend("force", opts.pipe_table or {}, {
