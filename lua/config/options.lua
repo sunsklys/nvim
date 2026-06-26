@@ -1,5 +1,8 @@
 vim.g.lazyvim_eslint_auto_format = false
 vim.g.lazyvim_ts_lsp = "vtsls"
+-- LazyVim lang.python extra 默认用 pyright；用户偏好 basedpyright（fork，更严格类型检查）
+-- LazyVim lang.python extra 内置支持此切换（见 extras/lang/python.lua:9 读取 g 变量，:54-63 按它切 enabled）
+vim.g.lazyvim_python_lsp = "basedpyright"
 
 -- iTerm2 标签页显示：项目名/当前文件夹
 vim.opt.title = true
