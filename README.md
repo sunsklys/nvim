@@ -54,3 +54,72 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
        navigate = true                   # n / N 在 diff 块之间跳转
    ```
 6. 完事 —— lazygit 以 tokyonight 主题渲染、并排 diff、按 `|` 切换单栏、`e` 键在父 nvim 打开文件；命令行 `git diff` 也走 delta + tokyonight 配色（`n`/`N` 跳 diff 块）
+
+## 启用的 LazyVim extras 与自定义插件
+
+### LazyVim extras（29 个，见 [`lazyvim.json`](./lazyvim.json)）
+
+**语言**: lang.go / lang.markdown / lang.typescript / lang.vue / lang.json / lang.yaml / lang.docker / lang.git / lang.python / lang.sql / lang.toml / lang.tailwind
+
+**编辑器**: editor.snacks_explorer / editor.snacks_picker / editor.inc-rename / editor.dial / editor.outline / editor.illuminate / editor.refactoring / editor.overseer
+
+**编码/UI/工具**: coding.mini-surround / coding.yanky / ui.treesitter-context / linting.eslint / dap.core / test.core / formatting.prettier / util.mini-hipatterns / util.rest
+
+### 自定义插件（`lua/plugins/`）
+
+| 路径 | 插件 | 用途 |
+| --- | --- | --- |
+| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（190 行配置） |
+| `coding/blink.lua` | blink.cmp | 补全（signature help 增强） |
+| `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
+| `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
+| `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
+| `go/lsp.lua` | nvim-lspconfig | gopls analyses 增强（shadow/unusedwrite/nilness/useany） + gofumpt |
+| `go/neotest.lua` | neotest | neotest-golang 参数 |
+| `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
+| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim | buffer 内渲染 + 浏览器预览 |
+| `ui/snacks.lua` | snacks.nvim | picker actions（含 opencode 安全过滤） + explorer 显示隐藏文件 |
+| `ui/theme.lua` | tokyonight.nvim | 主题（night style） |
+| `ui/which-key.lua` | which-key.nvim | helix preset + 全中文 desc |
+
+### 关键自定义快捷键
+
+| 键 | 作用 | 来源 |
+| --- | --- | --- |
+| `<leader>oo` | 切换 OpenCode 终端 | ai/opencode.lua |
+| `<leader>oa` | 询问 OpenCode（输入框） | ai/opencode.lua |
+| `<leader>oe/or/of/ot/oz/od` | OpenCode 内置 prompts | ai/opencode.lua |
+| `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
+| `<leader>gW` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
+| `<leader>gv/gV/gH/gC` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
+| `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
+| `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode | ui/snacks.lua |
+
+### 有关 extras 选择的说明
+
+- **未启用 `util.octo`**：octo 会强制接管 `<leader>gi/gI/gp/gP`（disable snacks+gh CLI 的默认行为），改为 octo 命令。本仓库选择保留 LazyVim 默认的轻量 snacks+gh CLI 浏览（`<leader>gi` 列 open issues / `<leader>gI` 列全部 / `<leader>gp` 列 open PRs / `<leader>gP` 列全部）。若需 octo 的深度功能（评论/合并 PR），手动 `:Octo` 命令访问需先启用 extra。
+- **`editor.overseer` 已启用但 `<leader>oo/ot` 被覆盖**：LazyVim overseer extra 默认绑 `<leader>oo=OverseerRun` / `<leader>ot=OverseerTaskAction`，但本仓库 `lua/plugins/ai/opencode.lua` 后加载覆盖了这两个键（lazy.nvim 加载顺序：extras 先 → 用户 plugins 后）。结果：opencode 保留 `<leader>oo/ot` 不受影响；overseer 保留 `<leader>ow`（Toggle task list），OverseerRun 通过 `:OverseerRun` 命令访问。
+
+### Python LSP 切换
+
+[`config/options.lua`](./lua/config/options.lua) 顶部设 `vim.g.lazyvim_python_lsp = "basedpyright"`，让 LazyVim lang.python extra 用 basedpyright 替代默认 pyright（用户偏好，更严格类型检查）。ruff 作为 linter/formatter 由 LazyVim 默认配置。
+
+### 换电脑后的外部依赖
+
+```bash
+brew install lazygit git-delta neovim python3 go node
+```
+
+- `python3` 用于 lang.python extra（basedpyright/ruff/neotest-python 通过 Mason 自动装）
+- `go` 用于 lang.go extra（gopls/delve/gofumpt 等通过 Mason 自动装）
+- `node` 用于 lang.typescript / lang.vue extras（vtsls/vue-language-server/prettier/eslint 通过 Mason 自动装）
+- `lazygit` + `git-delta` 用于 Git 工作流（diff/merge/lazygit 集成）
+- `neovim` 0.10+（实测 0.12.3）
+
+### 查看 LazyVim 最新变更
+
+```vim
+:LazyNews        " 读 LazyVim NEWS.md（lazyvim.json 的 news 字段记录已读到哪个 commit）
+:LazyExtras      “ 管理 LazyVim extras（启用/禁用/查看状态）
+:Lazy            “ 插件管理器（更新/同步/清理）
+```
