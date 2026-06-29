@@ -69,12 +69,12 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 | 路径 | 插件 | 用途 |
 | --- | --- | --- |
-| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（190 行配置） |
+| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（183 行配置） |
 | `coding/blink.lua` | blink.cmp | 补全（signature help 增强） |
 | `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
 | `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
 | `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
-| `go/lsp.lua` | nvim-lspconfig | gopls analyses 增强（shadow/unusedwrite/nilness/useany） + gofumpt |
+| `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开） + gofumpt 显式声明（LazyVim 默认已开；unusedwrite/nilness/useany LazyVim 已提供，本文件不重复） |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
 | `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim | buffer 内渲染 + 浏览器预览 |
@@ -88,12 +88,24 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | --- | --- | --- |
 | `<leader>oo` | 切换 OpenCode 终端 | ai/opencode.lua |
 | `<leader>oa` | 询问 OpenCode（输入框） | ai/opencode.lua |
-| `<leader>oe/or/of/ot/oz/od` | OpenCode 内置 prompts | ai/opencode.lua |
+| `<leader>oS` | 选择会话/命令/prompt | ai/opencode.lua |
+| `<leader>oe/or/of/ot/oz/od` | OpenCode 内置 prompts（解释/审查/修复/测试/优化/注释） | ai/opencode.lua |
+| `<leader>on` | 新建会话 | ai/opencode.lua |
+| `<leader>ou` | 撤销上一步 | ai/opencode.lua |
+| `<leader>oR` | 重做 | ai/opencode.lua |
+| `<leader>oc` | 压缩当前会话 | ai/opencode.lua |
+| `<leader>oi` | 中断当前会话 | ai/opencode.lua |
+| `<leader>oU` | 向上滚动 OpenCode 输出 | ai/opencode.lua |
+| `<leader>oD` | 向下滚动 OpenCode 输出 | ai/opencode.lua |
+| `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
+| `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
 | `<leader>gW` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
 | `<leader>gv/gV/gH/gC` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode | ui/snacks.lua |
+
+> **命名空间注记**：本仓库占用 15+ `<leader>o*` 子键（LazyVim 默认 `<leader>o` 只给 overseer），未来 LazyVim 若新增 `<leader>oi/oc` 等可能需调整。
 
 ### 有关 extras 选择的说明
 
@@ -114,7 +126,7 @@ brew install lazygit git-delta neovim python3 go node
 - `go` 用于 lang.go extra（gopls/delve/gofumpt 等通过 Mason 自动装）
 - `node` 用于 lang.typescript / lang.vue extras（vtsls/vue-language-server/prettier/eslint 通过 Mason 自动装）
 - `lazygit` + `git-delta` 用于 Git 工作流（diff/merge/lazygit 集成）
-- `neovim` 0.10+（实测 0.12.3）
+- `neovim` 0.11.2+（实测 0.12.3，LazyVim v15 强制要求 0.11.2）
 
 ### 查看 LazyVim 最新变更
 
