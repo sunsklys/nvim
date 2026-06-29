@@ -51,14 +51,6 @@ return {
         mode = { "n", "x" },
         desc = "询问 OpenCode (输入框)",
       },
-      {
-        "<leader>op",
-        function()
-          require("opencode").select()
-        end,
-        mode = { "n", "x" },
-        desc = "选择预置 prompt",
-      },
       -- 内置 prompts 一键触发
       {
         "<leader>oe",
@@ -120,6 +112,7 @@ return {
       {
         "goo",
         function()
+          -- 尾部 "_" 是 opencode operator 约定：返回字符串末尾占位符，触发 operator-pending 等待光标移动
           return require("opencode").operator("@this ") .. "_"
         end,
         mode = "n",
@@ -172,14 +165,14 @@ return {
       },
       -- 滚动 OpenCode 输出
       {
-        "<S-C-u>",
+        "<leader>oU",
         function()
           require("opencode").command("session.half.page.up")
         end,
         desc = "向上滚动 OpenCode",
       },
       {
-        "<S-C-d>",
+        "<leader>oD",
         function()
           require("opencode").command("session.half.page.down")
         end,
