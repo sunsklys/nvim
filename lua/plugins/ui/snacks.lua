@@ -32,8 +32,6 @@ return {
                   or name:match("%.key$")            -- *.key
                   or name:match("%.aws[/\\]")        -- .aws/
                   or name:match("%.ssh[/\\]")        -- .ssh/
-                  or name:match("[Cc]redential")     -- credentials/credential
-                  or name:match("[Ss]ecret")          -- Secret/secret
             end
             local items = vim.tbl_filter(function(i) return i ~= nil end, vim.tbl_map(function(item)
               local content = item.file or item.text or ""

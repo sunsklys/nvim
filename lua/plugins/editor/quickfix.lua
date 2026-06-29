@@ -5,10 +5,8 @@
 return {
   {
     "kevinhwang91/nvim-bqf",
-    event = "LazyFile",
     ft = "qf", -- 只在 quickfix 窗口加载
     opts = {
-      auto_enable = true,
       preview = {
         win_height = 12,
         win_vheight = 12,

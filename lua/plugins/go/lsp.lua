@@ -5,14 +5,13 @@ return {
       servers = {
         gopls = {
           settings = {
-            analyses = {
-              shadow = true,
-              -- LazyVim go extra 默认未启用、实用的几个检查：
-              unusedwrite = true, -- 检测无意义的重复写入（slice append 未使用返回值等）
-              nilness = true,    -- nil 指针解引用 / impossible nil 比较
-              useany = true,     -- interface{} 是否可换为 any
+            gopls = {
+              -- 本仓库 additive 于 LazyVim 默认：shadow 是 LazyVim 不开的，其余 LazyVim 已提供
+              analyses = {
+                shadow = true, -- 检测变量遮蔽（range/len/type 等），LazyVim 默认不开
+              },
+              gofumpt = true, -- 比 gofmt 更严格（LazyVim 默认已开，此处显式声明本仓库偏好）
             },
-            gofumpt = true,  -- 比 gofmt 更严格的格式化（社区标准）
           },
         },
       },
