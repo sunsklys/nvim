@@ -69,7 +69,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 | 路径 | 插件 | 用途 |
 | --- | --- | --- |
-| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（183 行配置） |
+| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（234 行配置） |
 | `coding/blink.lua` | blink.cmp | 补全（signature help 增强） |
 | `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
 | `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
@@ -87,7 +87,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 | 键 | 作用 | 来源 |
 | --- | --- | --- |
-| `<leader>oo` | 切换 OpenCode 终端 | ai/opencode.lua |
+| `<leader>oo` | 切换 OpenCode 终端（仅 normal mode） | ai/opencode.lua |
 | `<leader>oa` | 询问 OpenCode（输入框） | ai/opencode.lua |
 | `<leader>oS` | 选择会话/命令/prompt | ai/opencode.lua |
 | `<leader>oe/or/of/ot/oz/od/oE/oI` | OpenCode 内置 prompts（解释/审查/修复/测试/优化/注释/解释诊断/实现） | ai/opencode.lua |
@@ -109,7 +109,34 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode | ui/snacks.lua |
 
-> **命名空间注记**：本仓库占用 20+ `<leader>o*` 子键（LazyVim 默认 `<leader>o` 只给 overseer），未来 LazyVim 若新增 `<leader>oi/oc` 等可能需调整。`<leader>oo` 同时绑了 normal 和 terminal 模式，在 opencode 终端里按 `<leader>oo` 即可切回（README 提示 `<leader>` 前缀会在终端模式下引入极小延迟，可接受）。
+> **命名空间注记**：本仓库占用 20+ `<leader>o*` 子键（LazyVim 默认 `<leader>o` 只给 overseer），未来 LazyVim 若新增 `<leader>oi/oc` 等可能需调整。`<leader>oo` 只在 normal mode 绑定，在 opencode 终端内先按 `<C-\><C-n>` 回到 normal 再按 `<leader>oo` 切换（term mode 无 leader timeout 延迟；显式 disable overseer 默认键 via lua/plugins/editor/overseer.lua）。
+
+### 自动保存
+
+`lua/config/autocmds.lua` 监听 `InsertLeave + FocusLost` 触发 `silent! update`（保留 undo 历史，跳过 buftype != "" / 只读 / 未命名 / pumvisible 缓冲区）。
+
+不监听 `TextChanged`（避免 normal mode 每次按键触发全文 fsync）。后果：normal mode 编辑（`x`/`dd`/`p` 等）不会立即写盘，需切换插入模式或失焦才保存。崩溃恢复依赖 nvim 自身的 swap/undo 持久化。
+
+### 终端模式退出
+
+不绑定全局 `<Esc>` terminal mapping（避免截获 nested TUI 如 lazygit/fzf/opencode 终端的 Esc）。退出方式：
+- `<C-\><C-n>`：通用终端 → normal mode（Vim 原生）
+- `<C-/>`：LazyVim 默认终端 toggle
+- 在 opencode 终端内：先 `<C-\><C-n>` 再 `<leader>oo` 切换
+
+### Git diff 工具分层
+
+本仓库同时启用三个 diff 工具，分工如下：
+
+| 场景 | 工具 | 快捷键 |
+| --- | --- | --- |
+| 行内词级 diff（当前文件，快速） | gitsigns | `<leader>gW`（toggle） |
+| 跨文件 / 工作区全对比 | diffview | `<leader>gv` |
+| commit/staging/全 repo（含 lazygit side-by-side） | lazygit | `<leader>gg` |
+| 文件历史 | diffview | `<leader>gV`（当前文件）/ `<leader>gH`（全仓库） |
+| merge 冲突三方对比 | diffview | `:DiffviewOpen`（自动检测冲突） |
+
+按 `|` 在 lazygit 内的两档 diff（并排 / 单栏）间切换。
 
 ### 有关 extras 选择的说明
 

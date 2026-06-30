@@ -18,8 +18,6 @@ git:
 gui:
   # 收窄左侧文件列表（默认 0.3333），给并排 diff 留更多横向空间
   sidePanelWidth: 0.2
-  # 启用 Nerd Font 图标（与 tokyonight lazygit theme 中的设置重复，此作为防御性备份）
-  nerdFontsVersion: "3"
 
 # 让 lazygit 的 `e` 键用 neovim 打开文件。
 # nvim-remote 预设：从 LazyVim <leader>gg 调起时，文件会在父 nvim 进程中打开（不新开）。

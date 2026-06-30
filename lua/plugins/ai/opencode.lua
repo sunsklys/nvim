@@ -20,6 +20,7 @@ return {
       -- 全局副作用：开启 autoread 后【所有】 buffer 在外部被修改时会自动重载。
       -- opencode.nvim 的 events.reload 依赖此机制接收编辑反馈。
       -- 副作用是：其他场景（如多个编辑器同时改同一文件）也会触发静默重载。
+      -- 多编辑器场景下 undo 历史可能被外部写入打断（见 :help 'autoread'）。
       vim.o.autoread = true
     end,
     config = function()
