@@ -39,7 +39,7 @@ return {
         function()
           require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
         end,
-        mode = { "n" },
+        mode = { "n", "t" },
         desc = "切换 OpenCode",
       },
       -- 核心交互
@@ -73,6 +73,7 @@ return {
         function()
           require("opencode").prompt("Fix @diagnostics")
         end,
+        mode = { "n", "x" },
         desc = "修复诊断",
       },
       {
@@ -98,6 +99,30 @@ return {
         end,
         mode = { "n", "x" },
         desc = "为当前代码添加注释",
+      },
+      {
+        "<leader>oE",
+        function()
+          require("opencode").prompt("Explain @diagnostics")
+        end,
+        mode = { "n", "x" },
+        desc = "解释诊断信息",
+      },
+      {
+        "<leader>oI",
+        function()
+          require("opencode").prompt("Implement @this")
+        end,
+        mode = { "n", "x" },
+        desc = "实现当前代码",
+      },
+      -- Agent 切换
+      {
+        "<leader>oA",
+        function()
+          require("opencode").command("agent.cycle")
+        end,
+        desc = "切换 AI 模型",
       },
       -- Operator + dot-repeat
       {
@@ -162,6 +187,20 @@ return {
           require("opencode").command("session.interrupt")
         end,
         desc = "中断当前会话",
+      },
+      {
+        "<leader>oL",
+        function()
+          require("opencode").command("session.last")
+        end,
+        desc = "跳到最新消息",
+      },
+      {
+        "<leader>oP",
+        function()
+          require("opencode").command("session.share")
+        end,
+        desc = "分享当前会话",
       },
       -- 滚动 OpenCode 输出
       {

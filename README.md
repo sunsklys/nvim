@@ -79,6 +79,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
 | `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim | buffer 内渲染 + 浏览器预览 |
 | `ui/snacks.lua` | snacks.nvim | picker actions（含 opencode 安全过滤） + explorer 显示隐藏文件 |
+| `ui/lualine.lua` | lualine.nvim | 状态栏追加 OpenCode 状态图标（idle/busy/error/未连接） |
 | `ui/theme.lua` | tokyonight.nvim | 主题（night style） |
 | `ui/which-key.lua` | which-key.nvim | helix preset + 全中文 desc |
 
@@ -89,12 +90,15 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>oo` | 切换 OpenCode 终端 | ai/opencode.lua |
 | `<leader>oa` | 询问 OpenCode（输入框） | ai/opencode.lua |
 | `<leader>oS` | 选择会话/命令/prompt | ai/opencode.lua |
-| `<leader>oe/or/of/ot/oz/od` | OpenCode 内置 prompts（解释/审查/修复/测试/优化/注释） | ai/opencode.lua |
+| `<leader>oe/or/of/ot/oz/od/oE/oI` | OpenCode 内置 prompts（解释/审查/修复/测试/优化/注释/解释诊断/实现） | ai/opencode.lua |
+| `<leader>oA` | 切换 AI 模型（agent.cycle） | ai/opencode.lua |
 | `<leader>on` | 新建会话 | ai/opencode.lua |
 | `<leader>ou` | 撤销上一步 | ai/opencode.lua |
 | `<leader>oR` | 重做 | ai/opencode.lua |
 | `<leader>oc` | 压缩当前会话 | ai/opencode.lua |
 | `<leader>oi` | 中断当前会话 | ai/opencode.lua |
+| `<leader>oL` | 跳到最新消息 | ai/opencode.lua |
+| `<leader>oP` | 分享当前会话 | ai/opencode.lua |
 | `<leader>oU` | 向上滚动 OpenCode 输出 | ai/opencode.lua |
 | `<leader>oD` | 向下滚动 OpenCode 输出 | ai/opencode.lua |
 | `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
@@ -105,7 +109,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode | ui/snacks.lua |
 
-> **命名空间注记**：本仓库占用 15+ `<leader>o*` 子键（LazyVim 默认 `<leader>o` 只给 overseer），未来 LazyVim 若新增 `<leader>oi/oc` 等可能需调整。
+> **命名空间注记**：本仓库占用 20+ `<leader>o*` 子键（LazyVim 默认 `<leader>o` 只给 overseer），未来 LazyVim 若新增 `<leader>oi/oc` 等可能需调整。`<leader>oo` 同时绑了 normal 和 terminal 模式，在 opencode 终端里按 `<leader>oo` 即可切回（README 提示 `<leader>` 前缀会在终端模式下引入极小延迟，可接受）。
 
 ### 有关 extras 选择的说明
 
