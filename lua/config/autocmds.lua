@@ -1,5 +1,5 @@
 local group = vim.api.nvim_create_augroup("autosave", { clear = true })
-vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged", "FocusLost" }, {
+vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost" }, {
   group = group,
   callback = function(ev)
     local buf = ev.buf

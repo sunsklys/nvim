@@ -51,7 +51,7 @@ return {
         function()
           require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
         end,
-        mode = { "n", "t" },
+        mode = "n",
         desc = "切换 OpenCode",
       },
       -- 核心交互
