@@ -112,7 +112,7 @@ return {
       {
         "goo",
         function()
-          -- 尾部 "_" 是 opencode operator 约定：返回字符串末尾占位符，触发 operator-pending 等待光标移动
+          -- 尾部 "_" 是 Vim 内置行 motion：g@_ 让 operator 立即作用于整行（与 go{motion} 的等待 motion 相对）
           return require("opencode").operator("@this ") .. "_"
         end,
         mode = "n",

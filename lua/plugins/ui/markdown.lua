@@ -17,7 +17,7 @@ return {
   -- render-markdown.nvim：buffer 内渲染
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    -- 仅移除未安装的 Avante/codecompanion/copilot-chat 三个 ft；保留 LazyVim 默认的 norg/rmd/org
+    -- 仅移除 codecompanion ft（未启用该 extra）；保留 LazyVim 默认的 markdown/norg/rmd/org
     ft = { "markdown", "norg", "rmd", "org" },
     opts = function(_, opts)
       -- 表格圆角边框（LazyVim/插件默认 preset="none" 无圆角）
