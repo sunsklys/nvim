@@ -31,6 +31,18 @@ return {
           end,
         },
       }
+
+      local last_redraw = 0
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "OpencodeEvent:session.status",
+        callback = function()
+          local now = vim.uv.hrtime() / 1e6
+          if now - last_redraw > 200 then
+            last_redraw = now
+            vim.defer_fn(function() vim.cmd("redrawstatus") end, 0)
+          end
+        end,
+      })
     end,
     keys = {
       -- 终端切换（沿用原 <leader>oo 习惯）

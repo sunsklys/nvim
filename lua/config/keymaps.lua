@@ -1,4 +1,3 @@
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "终端模式退出" })
 
 vim.keymap.set("n", "<leader>ga", function()
   local f = vim.fn.expand("%:p:r")
