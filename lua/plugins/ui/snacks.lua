@@ -25,13 +25,36 @@ return {
             -- 安全护栏：疑似密钥/凭证文件不发给 AI provider（避免 .env/*.pem/id_rsa 一键泄漏）
             -- Lua 模式不支持 | 或运算，逐个 match
             local function is_secret(name)
-              return name:match("%.env[%w.]*$")      -- .env / .env.local
-                  or name:match("id_rsa")            -- id_rsa / id_rsa.pub
-                  or name:match("%.pem$")            -- *.pem
-                  or name:match("%.p12$")            -- *.p12
-                  or name:match("%.key$")            -- *.key
-                  or name:match("%.aws[/\\]")        -- .aws/
-                  or name:match("%.ssh[/\\]")        -- .ssh/
+              -- 1. 无歧义路径/扩展名模式（直接拦截）
+              if name:match("%.env[%w.]*$") then return true end       -- .env / .env.local / .envrc
+              if name:match("id_rsa") then return true end             -- id_rsa / id_rsa.pub
+              if name:match("%.[pP]em$") then return true end          -- *.pem / *.Pem
+              if name:match("%.p12$") then return true end             -- *.p12
+              if name:match("%.pfx$") then return true end             -- *.pfx (PKCS12, 新增)
+              if name:match("%.key$") then return true end             -- *.key
+              if name:match("%.aws[/\\]") then return true end         -- .aws/
+              if name:match("%.ssh[/\\]") then return true end         -- .ssh/
+              if name:match("%.kube[/\\]config") then return true end  -- kubeconfig (新增)
+
+              -- 2. secret/credential 关键字 + 凭证类扩展名
+              --    凭证扩展名白名单 vs 源码扩展名（.go/.py/.ts/.rs/.java/.vue...）
+              --    双层守卫：关键字 + 凭证扩展同时命中才拦截，避免误伤 secret.go 等源码
+              local has_credential_ext = name:match("%.json$")
+                                      or name:match("%.ya?ml$")
+                                      or name:match("%.toml$")
+                                      or name:match("%.ini$")
+                                      or name:match("%.conf$")
+                                      or name:match("%.cfg$")
+                                      or name:match("%.env$")
+                                      or name:match("%.txt$")
+              if (name:match("[Ss]ecret") or name:match("[Cc]redential")) and has_credential_ext then
+                return true
+              end
+
+              -- 3. 无扩展名的标准凭证文件名（按需补充）
+              if name:match("^aws[_-]credentials$") then return true end  -- aws_credentials / aws-credentials
+
+              return false
             end
             local items = vim.tbl_filter(function(i) return i ~= nil end, vim.tbl_map(function(item)
               local content = item.file or item.text or ""
