@@ -14,7 +14,6 @@ return {
           { "<leader>f", group = "文件/查找" },
           { "<leader>g", group = "Git" },
           { "<leader>gd", group = "Diff 工具" },
-          { "<leader>o", group = "Overseer" },
           { "<leader>a", group = "AI/OpenCode" },
           { "<leader>ap", group = "prompts" },
           { "<leader>as", group = "会话" },
