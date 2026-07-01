@@ -163,7 +163,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 ### 换电脑后的外部依赖
 
 ```bash
-brew install lazygit git-delta neovim python3 go node
+brew install lazygit git-delta neovim python3 go node imagemagick pkg-config luarocks && luarocks --lua-version 5.1 install magick
 ```
 
 - `python3` 用于 lang.python extra（basedpyright/ruff/neotest-python 通过 Mason 自动装）
@@ -171,6 +171,7 @@ brew install lazygit git-delta neovim python3 go node
 - `node` 用于 lang.typescript / lang.vue extras（vtsls/vue-language-server/prettier/eslint 通过 Mason 自动装）
 - `lazygit` + `git-delta` 用于 Git 工作流（diff/merge/lazygit 集成）
 - `neovim` 0.11.2+（实测 0.12.3，LazyVim v15 强制要求 0.11.2）
+- `imagemagick` + `pkg-config` + `luarocks` + `magick` rock：snacks.image 全格式图片渲染（Ghostty Kitty graphics protocol；无 magick 仅 PNG 可用）
 
 ### 查看 LazyVim 最新变更
 
