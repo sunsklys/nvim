@@ -61,7 +61,6 @@ return {
     keys = {
       {
         "<leader>cp",
-        ft = "markdown",
         "<cmd>MarkdownPreviewToggle<cr>",
         desc = "Markdown Preview (browser)",
       },
