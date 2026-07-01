@@ -7,7 +7,7 @@ return {
       style = "night",
       styles = {
         sidebars = "normal",
-        floats = "normal",
+        floats = "dark",
       },
     },
   },
