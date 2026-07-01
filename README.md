@@ -103,7 +103,6 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>avD` | 向下滚动 OpenCode 输出 | ai/opencode.lua |
 | `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
 | `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
-| `<leader>oo/oa` | **过渡别名**（→ `at`/`aa`），肌肉记忆稳定后删除 | ai/opencode.lua |
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
 | `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
 | `<leader>gdv/gdV/gdH/gdc` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |

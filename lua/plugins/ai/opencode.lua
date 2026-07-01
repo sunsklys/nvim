@@ -42,7 +42,6 @@ return {
       -- ============================================================
       -- OpenCode 键位命名空间：<leader>a*
       -- 从 <leader>o* 迁移而来（释放 overseer 命名空间）
-      -- <leader>oo / <leader>oa 保留为过渡别名，肌肉记忆稳定后可删除
       -- ============================================================
 
       -- 终端切换
@@ -54,15 +53,6 @@ return {
         mode = "n",
         desc = "切换 OpenCode",
       },
-      -- 过渡别名（原 <leader>oo）
-      {
-        "<leader>oo",
-        function()
-          require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
-        end,
-        mode = "n",
-        desc = "切换 OpenCode（过渡别名 → <leader>at）",
-      },
 
       -- 核心交互
       {
@@ -72,15 +62,6 @@ return {
         end,
         mode = { "n", "x" },
         desc = "询问 OpenCode (输入框)",
-      },
-      -- 过渡别名（原 <leader>oa）
-      {
-        "<leader>oa",
-        function()
-          require("opencode").ask("@this: ")
-        end,
-        mode = { "n", "x" },
-        desc = "询问 OpenCode（过渡别名 → <leader>aa）",
       },
 
       -- Agent / 模型切换
