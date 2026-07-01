@@ -10,7 +10,10 @@ return {
       opts.sections.lualine_z = opts.sections.lualine_z or {}
       table.insert(opts.sections.lualine_z, {
         function()
-          return require("opencode").statusline()
+          local s = require("opencode").statusline()
+          -- 去掉 server URL（非用户可操作信息），只保留图标 + 状态
+          s = s:gsub("https?://%S+", "")
+          return (s:gsub("^%s+", ""):gsub("%s+$", ""))
         end,
         cond = function()
           return package.loaded["opencode"] ~= nil
