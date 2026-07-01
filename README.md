@@ -69,7 +69,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 | 路径 | 插件 | 用途 |
 | --- | --- | --- |
-| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（234 行配置） |
+| `ai/opencode.lua` | opencode.nvim | AI 对话/编辑/会话全套（`<leader>a*` 命名空间） |
 | `coding/blink.lua` | blink.cmp | 补全（signature help 增强） |
 | `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
 | `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
@@ -87,29 +87,30 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 | 键 | 作用 | 来源 |
 | --- | --- | --- |
-| `<leader>oo` | 切换 OpenCode 终端（仅 normal mode） | ai/opencode.lua |
-| `<leader>oa` | 询问 OpenCode（输入框） | ai/opencode.lua |
-| `<leader>oS` | 选择会话/命令/prompt | ai/opencode.lua |
-| `<leader>oe/or/of/ot/oz/od/oE/oI` | OpenCode 内置 prompts（解释/审查/修复/测试/优化/注释/解释诊断/实现） | ai/opencode.lua |
-| `<leader>oA` | 切换 AI 模型（agent.cycle） | ai/opencode.lua |
-| `<leader>on` | 新建会话 | ai/opencode.lua |
-| `<leader>ou` | 撤销上一步 | ai/opencode.lua |
-| `<leader>oR` | 重做 | ai/opencode.lua |
-| `<leader>oc` | 压缩当前会话 | ai/opencode.lua |
-| `<leader>oi` | 中断当前会话 | ai/opencode.lua |
-| `<leader>oL` | 跳到最新消息 | ai/opencode.lua |
-| `<leader>oP` | 分享当前会话 | ai/opencode.lua |
-| `<leader>oU` | 向上滚动 OpenCode 输出 | ai/opencode.lua |
-| `<leader>oD` | 向下滚动 OpenCode 输出 | ai/opencode.lua |
+| `<leader>at` | 切换 OpenCode 终端（仅 normal mode） | ai/opencode.lua |
+| `<leader>aa` | 询问 OpenCode（输入框） | ai/opencode.lua |
+| `<leader>am` | 切换 AI 模型（agent.cycle） | ai/opencode.lua |
+| `<leader>ape/apr/apf/apt/apz/apd/apE/apI` | OpenCode 内置 prompts（解释/审查/修复/测试/优化/注释/解释诊断/实现） | ai/opencode.lua |
+| `<leader>asn` | 新建会话 | ai/opencode.lua |
+| `<leader>asS` | 选择会话/命令/prompt | ai/opencode.lua |
+| `<leader>asu` | 撤销上一步 | ai/opencode.lua |
+| `<leader>asR` | 重做 | ai/opencode.lua |
+| `<leader>asc` | 压缩当前会话 | ai/opencode.lua |
+| `<leader>asi` | 中断当前会话 | ai/opencode.lua |
+| `<leader>asL` | 跳到最新消息 | ai/opencode.lua |
+| `<leader>asP` | 分享当前会话 | ai/opencode.lua |
+| `<leader>avU` | 向上滚动 OpenCode 输出 | ai/opencode.lua |
+| `<leader>avD` | 向下滚动 OpenCode 输出 | ai/opencode.lua |
 | `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
 | `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
+| `<leader>oo/oa` | **过渡别名**（→ `at`/`aa`），肌肉记忆稳定后删除 | ai/opencode.lua |
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
-| `<leader>gW` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
-| `<leader>gv/gV/gH/gC` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
+| `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
+| `<leader>gdv/gdV/gdH/gdc` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
-| `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode | ui/snacks.lua |
+| `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
 
-> **命名空间注记**：本仓库占用 20+ `<leader>o*` 子键（LazyVim 默认 `<leader>o` 只给 overseer），未来 LazyVim 若新增 `<leader>oi/oc` 等可能需调整。`<leader>oo` 只在 normal mode 绑定，在 opencode 终端内先按 `<C-\><C-n>` 回到 normal 再按 `<leader>oo` 切换（term mode 无 leader timeout 延迟；显式 disable overseer 默认键 via lua/plugins/editor/overseer.lua）。
+> **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图），与 LazyVim overseer 的 `<leader>o*` 完全分离。`<leader>oo`/`<leader>oa` 保留为过渡别名。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先按 `<C-\><C-n>` 回到 normal 再按 `<leader>at` 切换（term mode 无 leader timeout 延迟）。
 
 ### 自动保存
 
@@ -122,7 +123,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 不绑定全局 `<Esc>` terminal mapping（避免截获 nested TUI 如 lazygit/fzf/opencode 终端的 Esc）。退出方式：
 - `<C-\><C-n>`：通用终端 → normal mode（Vim 原生）
 - `<C-/>`：LazyVim 默认终端 toggle
-- 在 opencode 终端内：先 `<C-\><C-n>` 再 `<leader>oo` 切换
+- 在 opencode 终端内：先 `<C-\><C-n>` 再 `<leader>at` 切换
 
 ### Git diff 工具分层
 
@@ -130,10 +131,10 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 | 场景 | 工具 | 快捷键 |
 | --- | --- | --- |
-| 行内词级 diff（当前文件，快速） | gitsigns | `<leader>gW`（toggle） |
-| 跨文件 / 工作区全对比 | diffview | `<leader>gv` |
+| 行内词级 diff（当前文件，快速） | gitsigns | `<leader>gdw`（toggle） |
+| 跨文件 / 工作区全对比 | diffview | `<leader>gdv` |
 | commit/staging/全 repo（含 lazygit side-by-side） | lazygit | `<leader>gg` |
-| 文件历史 | diffview | `<leader>gV`（当前文件）/ `<leader>gH`（全仓库） |
+| 文件历史 | diffview | `<leader>gdV`（当前文件）/ `<leader>gdH`（全仓库） |
 | merge 冲突三方对比 | diffview | `:DiffviewOpen`（自动检测冲突） |
 
 按 `|` 在 lazygit 内的两档 diff（并排 / 单栏）间切换。
@@ -141,11 +142,24 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 ### 有关 extras 选择的说明
 
 - **未启用 `util.octo`**：octo 会强制接管 `<leader>gi/gI/gp/gP`（disable snacks+gh CLI 的默认行为），改为 octo 命令。本仓库选择保留 LazyVim 默认的轻量 snacks+gh CLI 浏览（`<leader>gi` 列 open issues / `<leader>gI` 列全部 / `<leader>gp` 列 open PRs / `<leader>gP` 列全部）。若需 octo 的深度功能（评论/合并 PR），手动 `:Octo` 命令访问需先启用 extra。
-- **`editor.overseer` 已启用但 `<leader>oo/ot` 被覆盖**：LazyVim overseer extra 默认绑 `<leader>oo=OverseerRun` / `<leader>ot=OverseerTaskAction`，但本仓库 `lua/plugins/ai/opencode.lua` 后加载覆盖了这两个键（lazy.nvim 加载顺序：extras 先 → 用户 plugins 后）。结果：opencode 保留 `<leader>oo/ot` 不受影响；overseer 保留 `<leader>ow`（Toggle task list），OverseerRun 通过 `:OverseerRun` 命令访问。
+- **`editor.overseer` 使用 LazyVim 默认键位**：OpenCode 已迁移到 `<leader>a*` 命名空间，不再与 overseer 的 `<leader>oo/ot` 碰撞。overseer 保留全部 LazyVim 默认键（`<leader>oo=OverseerRun` / `<leader>ot=OverseerTaskAction` / `<leader>ow=OverseerToggle`）。
 
 ### Python LSP 切换
 
 [`config/options.lua`](./lua/config/options.lua) 顶部设 `vim.g.lazyvim_python_lsp = "basedpyright"`，让 LazyVim lang.python extra 用 basedpyright 替代默认 pyright（用户偏好，更严格类型检查）。ruff 作为 linter/formatter 由 LazyVim 默认配置。
+
+### 终端兼容性（Ghostty）
+
+本配置在 Ghostty 上开发和测试。以下 Ghostty 特性被利用：
+
+- **True color / 24-bit**：LazyVim 默认 `termguicolors = true`，Ghostty 原生支持
+- **Undercurl / underline styles**：Neovim 0.10+ 原生发 SGR 4:0-4:5 序列，Ghostty 原生渲染（诊断下划线）
+- **Kitty graphics protocol**：`snacks.image` 已启用，markdown 图片在 Ghostty 内 inline 渲染（不支持的终端优雅降级）
+- **Kitty keyboard protocol**：Neovim 0.11+ `keyprotocol = "auto"`（DA1 probe），Ghostty 自动响应。`<C-S-Up>` 与 `<C-Up>` 可区分。验证：`:lua =vim.opt.keyprotocol:get()` 返回 `"auto"`
+- **OSC 0/2 标题**：`vim.opt.title = true` + `titlestring`，Ghostty 正常显示项目名/路径
+- **`macos-option-as-alt = true`**：Ghostty 配置中需开启此项，`<a-a>` 等 Alt 组合键才能被 Neovim 正确接收
+- **Cursor shape（DECSCUSR）**：Neovim 默认模式切换光标，Ghostty 原生支持
+- **剪贴板**：本地使用 `pbcopy`/`pbpaste`（macOS 原生）；SSH 远程场景需自行配 OSC 52
 
 ### 换电脑后的外部依赖
 
