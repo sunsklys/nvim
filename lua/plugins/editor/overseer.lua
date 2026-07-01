@@ -1,14 +1,8 @@
--- 显式禁用 LazyVim overseer extra 的 `<leader>oo/ot` 默认键位，
--- 让本仓库 opencode.lua 的同名键（OpenCode 终端切换 / 为当前代码生成测试）
--- 不再依赖 lazy.nvim 的"extras 先加载 → 用户 plugins 后加载覆盖"约定。
--- `<leader>ow`（OverseerToggle 任务列表）保留不动 —— opencode.lua 未占用。
--- 见 .omo/plans/lazyvim-audit-hyperplan.md T5 / architect Round 2 M2。
+-- overseer.nvim 使用 LazyVim extra 默认键位。
+-- opencode.nvim 已迁移到 <leader>a* 命名空间，不再与 overseer 的 <leader>oo/ot 碰撞。
+-- 历史：曾用显式 keys=false 禁用 overseer 默认键，随 B3 Option I 迁移已删除。
 return {
   {
     "stevearc/overseer.nvim",
-    keys = {
-      { "<leader>oo", false },
-      { "<leader>ot", false },
-    },
   },
 }

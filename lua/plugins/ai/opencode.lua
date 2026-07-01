@@ -39,27 +39,64 @@ return {
       })
     end,
     keys = {
-      -- 终端切换（沿用原 <leader>oo 习惯）
+      -- ============================================================
+      -- OpenCode 键位命名空间：<leader>a*
+      -- 从 <leader>o* 迁移而来（释放 overseer 命名空间）
+      -- <leader>oo / <leader>oa 保留为过渡别名，肌肉记忆稳定后可删除
+      -- ============================================================
+
+      -- 终端切换
       {
-        "<leader>oo",
+        "<leader>at",
         function()
           require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
         end,
         mode = "n",
         desc = "切换 OpenCode",
       },
+      -- 过渡别名（原 <leader>oo）
+      {
+        "<leader>oo",
+        function()
+          require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
+        end,
+        mode = "n",
+        desc = "切换 OpenCode（过渡别名 → <leader>at）",
+      },
+
       -- 核心交互
       {
-        "<leader>oa",
+        "<leader>aa",
         function()
           require("opencode").ask("@this: ")
         end,
         mode = { "n", "x" },
         desc = "询问 OpenCode (输入框)",
       },
-      -- 内置 prompts 一键触发
+      -- 过渡别名（原 <leader>oa）
       {
-        "<leader>oe",
+        "<leader>oa",
+        function()
+          require("opencode").ask("@this: ")
+        end,
+        mode = { "n", "x" },
+        desc = "询问 OpenCode（过渡别名 → <leader>aa）",
+      },
+
+      -- Agent / 模型切换
+      {
+        "<leader>am",
+        function()
+          require("opencode").command("agent.cycle")
+        end,
+        desc = "切换 AI 模型",
+      },
+
+      -- ============================================================
+      -- Prompts 子组 <leader>ap*（原 <leader>oe/or/of/ot/oz/od/oE/oI）
+      -- ============================================================
+      {
+        "<leader>ape",
         function()
           require("opencode").prompt("Explain @this and its context")
         end,
@@ -67,7 +104,7 @@ return {
         desc = "解释当前代码",
       },
       {
-        "<leader>or",
+        "<leader>apr",
         function()
           require("opencode").prompt("Review @this for correctness and readability")
         end,
@@ -75,7 +112,7 @@ return {
         desc = "审查当前代码",
       },
       {
-        "<leader>of",
+        "<leader>apf",
         function()
           require("opencode").prompt("Fix @diagnostics")
         end,
@@ -83,7 +120,7 @@ return {
         desc = "修复诊断",
       },
       {
-        "<leader>ot",
+        "<leader>apt",
         function()
           require("opencode").prompt("Add tests for @this")
         end,
@@ -91,7 +128,7 @@ return {
         desc = "为当前代码生成测试",
       },
       {
-        "<leader>oz",
+        "<leader>apz",
         function()
           require("opencode").prompt("Optimize @this for performance and readability")
         end,
@@ -99,7 +136,7 @@ return {
         desc = "优化当前代码",
       },
       {
-        "<leader>od",
+        "<leader>apd",
         function()
           require("opencode").prompt("Add comments documenting @this")
         end,
@@ -107,7 +144,7 @@ return {
         desc = "为当前代码添加注释",
       },
       {
-        "<leader>oE",
+        "<leader>apE",
         function()
           require("opencode").prompt("Explain @diagnostics")
         end,
@@ -115,22 +152,96 @@ return {
         desc = "解释诊断信息",
       },
       {
-        "<leader>oI",
+        "<leader>apI",
         function()
           require("opencode").prompt("Implement @this")
         end,
         mode = { "n", "x" },
         desc = "实现当前代码",
       },
-      -- Agent 切换
+
+      -- ============================================================
+      -- Session 子组 <leader>as*（原 <leader>on/oS/ou/oR/oc/oi/oL/oP）
+      -- ============================================================
       {
-        "<leader>oA",
+        "<leader>asn",
         function()
-          require("opencode").command("agent.cycle")
+          require("opencode").command("session.new")
         end,
-        desc = "切换 AI 模型",
+        desc = "新建会话",
       },
-      -- Operator + dot-repeat
+      {
+        "<leader>asS",
+        function()
+          require("opencode").select()
+        end,
+        mode = { "n", "x" },
+        desc = "选择会话/命令/prompt",
+      },
+      {
+        "<leader>asu",
+        function()
+          require("opencode").command("session.undo")
+        end,
+        desc = "撤销上一步",
+      },
+      {
+        "<leader>asR",
+        function()
+          require("opencode").command("session.redo")
+        end,
+        desc = "重做",
+      },
+      {
+        "<leader>asc",
+        function()
+          require("opencode").command("session.compact")
+        end,
+        desc = "压缩当前会话",
+      },
+      {
+        "<leader>asi",
+        function()
+          require("opencode").command("session.interrupt")
+        end,
+        desc = "中断当前会话",
+      },
+      {
+        "<leader>asL",
+        function()
+          require("opencode").command("session.last")
+        end,
+        desc = "跳到最新消息",
+      },
+      {
+        "<leader>asP",
+        function()
+          require("opencode").command("session.share")
+        end,
+        desc = "分享当前会话",
+      },
+
+      -- ============================================================
+      -- 视图/滚动子组 <leader>av*（原 <leader>oU/oD）
+      -- ============================================================
+      {
+        "<leader>avU",
+        function()
+          require("opencode").command("session.half.page.up")
+        end,
+        desc = "向上滚动 OpenCode",
+      },
+      {
+        "<leader>avD",
+        function()
+          require("opencode").command("session.half.page.down")
+        end,
+        desc = "向下滚动 OpenCode",
+      },
+
+      -- ============================================================
+      -- Operator + dot-repeat（不随命名空间迁移）
+      -- ============================================================
       {
         "go",
         function()
@@ -149,79 +260,6 @@ return {
         mode = "n",
         expr = true,
         desc = "把整行发给 OpenCode",
-      },
-      -- Session 管理
-      {
-        "<leader>on",
-        function()
-          require("opencode").command("session.new")
-        end,
-        desc = "新建会话",
-      },
-      {
-        "<leader>oS",
-        function()
-          require("opencode").select()
-        end,
-        mode = { "n", "x" },
-        desc = "选择会话/命令/prompt",
-      },
-      {
-        "<leader>ou",
-        function()
-          require("opencode").command("session.undo")
-        end,
-        desc = "撤销上一步",
-      },
-      {
-        "<leader>oR",
-        function()
-          require("opencode").command("session.redo")
-        end,
-        desc = "重做",
-      },
-      {
-        "<leader>oc",
-        function()
-          require("opencode").command("session.compact")
-        end,
-        desc = "压缩当前会话",
-      },
-      {
-        "<leader>oi",
-        function()
-          require("opencode").command("session.interrupt")
-        end,
-        desc = "中断当前会话",
-      },
-      {
-        "<leader>oL",
-        function()
-          require("opencode").command("session.last")
-        end,
-        desc = "跳到最新消息",
-      },
-      {
-        "<leader>oP",
-        function()
-          require("opencode").command("session.share")
-        end,
-        desc = "分享当前会话",
-      },
-      -- 滚动 OpenCode 输出
-      {
-        "<leader>oU",
-        function()
-          require("opencode").command("session.half.page.up")
-        end,
-        desc = "向上滚动 OpenCode",
-      },
-      {
-        "<leader>oD",
-        function()
-          require("opencode").command("session.half.page.down")
-        end,
-        desc = "向下滚动 OpenCode",
       },
     },
   },
