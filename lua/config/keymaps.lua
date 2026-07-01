@@ -4,12 +4,12 @@ vim.keymap.set("n", "<leader>ga", function()
   if f:match("_test$") then
     local source = f:match("(.*)_test") .. ".go"
     if vim.fn.filereadable(source) == 1 then
-      vim.cmd("edit " .. source)
+      vim.cmd.edit(vim.fn.fnameescape(source))
     end
   else
     local test = f .. "_test.go"
     if vim.fn.filereadable(test) == 1 then
-      vim.cmd("edit " .. test)
+      vim.cmd.edit(vim.fn.fnameescape(test))
     end
   end
 end, { desc = "Go 测试/源文件切换" })
