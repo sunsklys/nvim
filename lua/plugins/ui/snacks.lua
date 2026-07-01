@@ -7,6 +7,7 @@ return {
     "folke/snacks.nvim",
     opts = {
       input = { enabled = true },
+      image = { enabled = true, doc = { max_width = 60, max_height = 20 } },
       picker = {
         enabled = true,
         sources = {
@@ -75,10 +76,13 @@ return {
         win = {
           input = {
             keys = {
-              ["<a-a>"] = { "opencode_send", mode = { "n", "i" } },
+              ["<a-a>"] = { "opencode_send", mode = { "n", "i" }, desc = "→ 发送到 OpenCode" },
             },
           },
         },
+      },
+      cheatsheet = {
+        enabled = true,
       },
     },
   },
