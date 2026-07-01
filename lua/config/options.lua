@@ -1,3 +1,7 @@
+-- luarocks 路径（magick Lua 绑定 for snacks.image 图片渲染）
+package.path = package.path .. ";" .. vim.fn.expand("$HOME/.luarocks/share/lua/5.1/?.lua") .. ";" .. vim.fn.expand("$HOME/.luarocks/share/lua/5.1/?/init.lua")
+package.cpath = package.cpath .. ";" .. vim.fn.expand("$HOME/.luarocks/lib/lua/5.1/?.so")
+
 vim.g.lazyvim_eslint_auto_format = false
 vim.g.lazyvim_ts_lsp = "vtsls"
 -- LazyVim lang.python extra 默认用 pyright；用户偏好 basedpyright（fork，更严格类型检查）
