@@ -10,7 +10,7 @@ vim.g.lazyvim_python_lsp = "basedpyright"
 
 -- opencode.nvim 的 events.reload 依赖 autoread 接收编辑反馈。
 -- 副作用：多个编辑器同改一个文件也会触发静默重载（undo 历史可能被打断）。
-vim.o.autoread = true
+vim.opt.autoread = true
 
 -- 终端标签页显示：项目名/当前文件夹（OSC 0/2，Ghostty/iTerm2/WezTerm 等均支持）
 vim.opt.title = true
