@@ -4,7 +4,11 @@ vim.g.lazyvim_ts_lsp = "vtsls"
 -- LazyVim lang.python extra 内置支持此切换（见 extras/lang/python.lua:9 读取 g 变量，:54-63 按它切 enabled）
 vim.g.lazyvim_python_lsp = "basedpyright"
 
--- iTerm2 标签页显示：项目名/当前文件夹
+-- opencode.nvim 的 events.reload 依赖 autoread 接收编辑反馈。
+-- 副作用：多个编辑器同改一个文件也会触发静默重载（undo 历史可能被打断）。
+vim.o.autoread = true
+
+-- 终端标签页显示：项目名/当前文件夹（OSC 0/2，Ghostty/iTerm2/WezTerm 等均支持）
 vim.opt.title = true
 vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}/%{expand('%:h:t')}"
 
@@ -16,8 +20,15 @@ vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}/%{expand('%:h:t')}"
 -- 若全角标点需要按 2 列展示，使用 vim.fn.setcellwidths() 精确指定。
 vim.opt.ambiwidth = "single"
 
--- 光标上下保留 8 行上下文（LazyVim 默认 4，增加到 8 提升编辑体验）
-vim.opt.scrolloff = 8
+-- 光标上下保留上下文行数：自适应窗口高度（大窗口 8 行，窄分屏 3 行）
+vim.opt.scrolloff = 4
+vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter" }, {
+  group = vim.api.nvim_create_augroup("AdaptiveScrolloff", { clear = true }),
+  callback = function()
+    local h = vim.api.nvim_win_get_height(0)
+    vim.wo.scrolloff = (h >= 30) and 8 or 3
+  end,
+})
 
 -- 长行软换行的视觉优化（适用于 markdown 长段落等 wrap=true 场景）
 -- 配合 LazyVim markdown extra 的 wrap=true + linebreak=true 生效
