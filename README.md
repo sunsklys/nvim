@@ -108,7 +108,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
 
-> **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图），与 LazyVim overseer 的 `<leader>o*` 完全分离。`<leader>oo`/`<leader>oa` 保留为过渡别名。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先按 `<C-\><C-n>` 回到 normal 再按 `<leader>at` 切换（term mode 无 leader timeout 延迟）。
+> **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图），与 LazyVim overseer 的 `<leader>o*` 完全分离。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先按 `<C-\><C-n>` 回到 normal 再按 `<leader>at` 切换（term mode 无 leader timeout 延迟）。
 
 ### 自动保存
 
