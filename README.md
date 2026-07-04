@@ -159,6 +159,37 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 - **Cursor shape（DECSCUSR）**：Neovim 默认模式切换光标，Ghostty 原生支持
 - **剪贴板**：本地使用 `pbcopy`/`pbpaste`（macOS 原生）；SSH 远程场景需自行配 OSC 52
 
+### iTerm2 配置（TokyoNight 主题导入）
+
+本仓库根目录的 [`tokyonight_night.itermcolors`](./tokyonight_night.itermcolors) 是从 `tokyonight.nvim/extras/iterm/` 拷贝的 iTerm2 配色预设，让 iTerm2 的 16 色 + Background/Foreground 与 nvim 内部的 tokyonight night 主题完全一致。
+
+> **必要性**：iTerm2 默认 `Background = #000000`（纯黑），而 nvim 内部用 `#1a1b26`（带紫蓝色调）。差值虽小但足以察觉 —— snacks terminal 里跑的 OpenCode / lazygit / zsh 等 TUI 程序的空区域会透出 iTerm2 背景色，看起来与 nvim 主编辑区「分层」。导入此预设后所有 TUI 视觉统一。
+
+#### 导入步骤
+
+1. iTerm2 → Settings → Profiles → 选中你的 Profile（默认 `Default`）
+2. `Colors` 标签 → 右下角 `Color Presets...` → `Import...`
+3. 选 `~/.config/nvim/tokyonight_night.itermcolors`
+4. 再次点 `Color Presets...` → 选 `tokyonight_night` 激活
+
+#### 配套设置（Alt 键）
+
+iTerm2 没有等价的 Ghostty `macos-option-as-alt = true` 单行配置，需手动设置以让 `<a-a>` 等 Alt 组合键被 Neovim 正确接收（`ui/snacks.lua` 的 `<a-a>` 发送到 OpenCode 依赖此设置）：
+
+- Settings → Profiles → Keys → `Left Option key` 改为 `Esc+`
+- Settings → Profiles → Keys → `Right Option key` 改为 `Esc+`
+
+#### 已知差异（vs Ghostty）
+
+| 特性 | Ghostty | iTerm2 |
+| --- | --- | --- |
+| Kitty graphics protocol | ✅ 原生（`snacks.image` 全格式 inline 渲染） | ❌ 不支持（仅 PNG fallback，且需 `magick` rock） |
+| Styled underlines | ✅ 原生 | ⚠️ 部分（curly/dotted/dashed 降级为基础下划线） |
+| Theme 一行配置 | `theme = TokyoNight Night` | 需 GUI 导入 `.itermcolors`（无 config 文件） |
+| True color / 24-bit | ✅ 默认 | ✅ 默认（`termguicolors` 直接生效） |
+| OSC 0/2 标题 | ✅ | ✅ |
+
+
 ### 换电脑后的外部依赖
 
 ```bash
