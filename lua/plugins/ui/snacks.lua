@@ -36,6 +36,12 @@ return {
               if name:match("%.aws[/\\]") then return true end         -- .aws/
               if name:match("%.ssh[/\\]") then return true end         -- .ssh/
               if name:match("%.kube[/\\]config") then return true end  -- kubeconfig (新增)
+              if name:match("%.npmrc$") then return true end            -- npm registry token (_authToken)
+              if name:match("%.netrc$") then return true end            -- machine credentials
+              if name:match("%.pypirc$") then return true end           -- PyPI credentials
+              if name:match("%.git%-credentials$") then return true end -- git credential store (Lua 模式中 - 需转义)
+              if name:match("%.tfvars$") then return true end           -- Terraform 变量（常含云密钥）
+              if name:match("%.htpasswd$") then return true end         -- HTTP basic auth
 
               -- 2. secret/credential 关键字 + 凭证类扩展名
               --    凭证扩展名白名单 vs 源码扩展名（.go/.py/.ts/.rs/.java/.vue...）
