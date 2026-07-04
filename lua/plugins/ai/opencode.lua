@@ -46,6 +46,7 @@ return {
       })
     end,
     keys = {
+      { "<leader>a", group = "OpenCode" },
       -- OpenCode 键位命名空间：<leader>a*（从 <leader>o* 迁移，释放 overseer 命名空间）
 
       -- 终端 + 核心交互
