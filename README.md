@@ -57,13 +57,13 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 ## 启用的 LazyVim extras 与自定义插件
 
-### LazyVim extras（29 个，见 [`lazyvim.json`](./lazyvim.json)）
+### LazyVim extras（26 个，见 [`lazyvim.json`](./lazyvim.json)）
 
-**语言**: lang.go / lang.markdown / lang.typescript / lang.vue / lang.json / lang.yaml / lang.docker / lang.git / lang.python / lang.sql / lang.toml / lang.tailwind
+**语言**: lang.go / lang.markdown / lang.typescript / lang.json / lang.yaml / lang.docker / lang.git / lang.python / lang.toml
 
-**编辑器**: editor.snacks_explorer / editor.snacks_picker / editor.inc-rename / editor.dial / editor.outline / editor.illuminate / editor.refactoring / editor.overseer
+**编辑器**: editor.snacks_explorer / editor.snacks_picker / editor.inc-rename / editor.dial / editor.outline / editor.illuminate / editor.refactoring
 
-**编码/UI/工具**: coding.mini-surround / coding.yanky / ui.treesitter-context / linting.eslint / dap.core / test.core / formatting.prettier / util.mini-hipatterns / util.rest
+**编码/UI/工具**: coding.mini-surround / coding.yanky / coding.neogen / ui.treesitter-context / linting.eslint / dap.core / test.core / formatting.prettier / util.mini-hipatterns / util.rest
 
 ### 自定义插件（`lua/plugins/`）
 
@@ -76,8 +76,9 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
 | `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开） + gofumpt 显式声明（LazyVim 默认已开；unusedwrite/nilness/useany LazyVim 已提供，本文件不重复） |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
+| `ui/baleia.lua` | baleia.nvim | log 文件 ANSI 颜色解码（`*.log`/`*.out` 自动 + `:BaleiaColorize` 手动） |
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
-| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim | buffer 内渲染 + 浏览器预览 |
+| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim | 表格圆角边框 + 代码块边框 + 浏览器预览（固定端口 8765，跟随系统主题） |
 | `ui/snacks.lua` | snacks.nvim | picker actions（含 opencode 安全过滤） + explorer 显示隐藏文件 |
 | `ui/lualine.lua` | lualine.nvim | 状态栏追加 OpenCode 状态图标（idle/busy/error/未连接） |
 | `ui/theme.lua` | tokyonight.nvim | 主题（night style） |
@@ -106,9 +107,13 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
 | `<leader>gdv/gdV/gdH/gdc` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
+| `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
+| `<leader>fl` | 列出运行中的 snacks 终端，选中 focus | config/keymaps.lua |
+| `<C-;>` | 终端模式单击立即退（兑底键，强制绕过 nested TUI 的双击 ESC 保护） | config/keymaps.lua |
+| `<Esc>` (终端) | 普通 shell 单击立即退；nested TUI（opencode/lazygit/fzf/...）双击退 | config/keymaps.lua |
 
-> **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图），与 LazyVim overseer 的 `<leader>o*` 完全分离。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先按 `<C-\><C-n>` 回到 normal 再按 `<leader>at` 切换（term mode 无 leader timeout 延迟）。
+> **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图）。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先用 `<C-;>` 或 `<C-\><C-n>` 回到 normal 再 toggle。
 
 ### 自动保存
 
@@ -118,10 +123,18 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 ### 终端模式退出
 
-不绑定全局 `<Esc>` terminal mapping（避免截获 nested TUI 如 lazygit/fzf/opencode 终端的 Esc）。退出方式：
-- `<C-\><C-n>`：通用终端 → normal mode（Vim 原生）
-- `<C-/>`：LazyVim 默认终端 toggle
-- 在 opencode 终端内：先 `<C-\><C-n>` 再 `<leader>at` 切换
+普通 shell 终端（`<leader>ft`）单击 ESC 立即回 normal；nested TUI（opencode / lazygit / fzf / htop 等）保留 snacks 默认的双击 ESC（保护其 ESC 键）。实现见 `lua/config/keymaps.lua` 的 `TermOpen` autocmd（按底层 cmd 智能分流）。
+
+通用退出键：
+- `<Esc>`（普通 shell）：单击立即退
+- `<Esc><Esc>`（nested TUI，200ms 内）：双击退
+- `<C-;>`：任何终端单击立即退（兑底，强制退）
+- `<C-\><C-n>`：Vim 原生，等价于 `<C-;>` 但难按
+- `<C-/>`：LazyVim 默认 toggle（关掉终端窗口）
+
+切换多个终端实例：
+- `<leader>ft` / `2<leader>ft` / `3<leader>ft`：toggle #1/#2/#3 终端（数字前缀 = 实例编号，进程持续运行）
+- `<leader>fl`：列出所有运行中的终端，选中 focus
 
 ### Git diff 工具分层
 
@@ -140,7 +153,6 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 ### 有关 extras 选择的说明
 
 - **未启用 `util.octo`**：octo 会强制接管 `<leader>gi/gI/gp/gP`（disable snacks+gh CLI 的默认行为），改为 octo 命令。本仓库选择保留 LazyVim 默认的轻量 snacks+gh CLI 浏览（`<leader>gi` 列 open issues / `<leader>gI` 列全部 / `<leader>gp` 列 open PRs / `<leader>gP` 列全部）。若需 octo 的深度功能（评论/合并 PR），手动 `:Octo` 命令访问需先启用 extra。
-- **`editor.overseer` 使用 LazyVim 默认键位**：OpenCode 已迁移到 `<leader>a*` 命名空间，不再与 overseer 的 `<leader>oo/ot` 碰撞。overseer 保留全部 LazyVim 默认键（`<leader>oo=OverseerRun` / `<leader>ot=OverseerTaskAction` / `<leader>ow=OverseerToggle`）。
 
 ### Python LSP 切换
 
@@ -208,7 +220,7 @@ brew install lazygit git-delta neovim python3 go node imagemagick pkg-config lua
 
 - `python3` 用于 lang.python extra（basedpyright/ruff/neotest-python 通过 Mason 自动装）
 - `go` 用于 lang.go extra（gopls/delve/gofumpt 等通过 Mason 自动装）
-- `node` 用于 lang.typescript / lang.vue extras（vtsls/vue-language-server/prettier/eslint 通过 Mason 自动装）
+- `node` 用于 lang.typescript extra（vtsls/prettier/eslint 通过 Mason 自动装）
 - `lazygit` + `git-delta` 用于 Git 工作流（diff/merge/lazygit 集成）
 - `neovim` 0.11.2+（实测 0.12.3，LazyVim v15 强制要求 0.11.2）
 - `imagemagick` + `pkg-config` + `luarocks` + `magick` rock：snacks.image 全格式图片渲染（Ghostty Kitty graphics protocol；无 magick 仅 PNG 可用）

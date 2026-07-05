@@ -26,40 +26,40 @@ return {
             -- 安全护栏：疑似密钥/凭证文件不发给 AI provider（避免 .env/*.pem/id_rsa 一键泄漏）
             -- Lua 模式不支持 | 或运算，逐个 match
             local function is_secret(name)
-              -- 1. 无歧义路径/扩展名模式（直接拦截）
-              if name:match("%.env[%w.]*$") then return true end       -- .env / .env.local / .envrc
-              if name:match("id_rsa") then return true end             -- id_rsa / id_rsa.pub
-              if name:match("%.[pP]em$") then return true end          -- *.pem / *.Pem
-              if name:match("%.p12$") then return true end             -- *.p12
-              if name:match("%.pfx$") then return true end             -- *.pfx (PKCS12, 新增)
-              if name:match("%.key$") then return true end             -- *.key
-              if name:match("%.aws[/\\]") then return true end         -- .aws/
-              if name:match("%.ssh[/\\]") then return true end         -- .ssh/
-              if name:match("%.kube[/\\]config") then return true end  -- kubeconfig (新增)
-              if name:match("%.npmrc$") then return true end            -- npm registry token (_authToken)
-              if name:match("%.netrc$") then return true end            -- machine credentials
-              if name:match("%.pypirc$") then return true end           -- PyPI credentials
-              if name:match("%.git%-credentials$") then return true end -- git credential store (Lua 模式中 - 需转义)
-              if name:match("%.tfvars$") then return true end           -- Terraform 变量（常含云密钥）
-              if name:match("%.htpasswd$") then return true end         -- HTTP basic auth
-
-              -- 2. secret/credential 关键字 + 凭证类扩展名
-              --    凭证扩展名白名单 vs 源码扩展名（.go/.py/.ts/.rs/.java/.vue...）
-              --    双层守卫：关键字 + 凭证扩展同时命中才拦截，避免误伤 secret.go 等源码
-              local has_credential_ext = name:match("%.json$")
-                                      or name:match("%.ya?ml$")
-                                      or name:match("%.toml$")
-                                      or name:match("%.ini$")
-                                      or name:match("%.conf$")
-                                      or name:match("%.cfg$")
-                                      or name:match("%.env$")
-                                      or name:match("%.txt$")
-              if (name:match("[Ss]ecret") or name:match("[Cc]redential")) and has_credential_ext then
-                return true
+              -- 模式表：命中即拦截（无歧义路径/扩展名）
+              local secret_patterns = {
+                "%.env[%w.]*$",        -- .env / .env.local / .envrc
+                "id_rsa",              -- id_rsa / id_rsa.pub
+                "%.[pP]em$",           -- *.pem
+                "%.p12$",              -- *.p12 (PKCS12)
+                "%.pfx$",              -- *.pfx (PKCS12)
+                "%.key$",              -- *.key
+                "%.aws[/\\]",          -- .aws/
+                "%.ssh[/\\]",          -- .ssh/
+                "%.kube[/\\]config",   -- kubeconfig
+                "%.npmrc$",            -- npm registry token
+                "%.netrc$",            -- machine credentials
+                "%.pypirc$",           -- PyPI credentials
+                "%.git%-credentials$", -- git credential store
+                "%.tfvars$",           -- Terraform 变量（常含云密钥）
+                "%.htpasswd$",         -- HTTP basic auth
+                "^aws[_-]credentials$",-- aws_credentials / aws-credentials
+              }
+              for _, pat in ipairs(secret_patterns) do
+                if name:match(pat) then return true end
               end
 
-              -- 3. 无扩展名的标准凭证文件名（按需补充）
-              if name:match("^aws[_-]credentials$") then return true end  -- aws_credentials / aws-credentials
+              -- 双层守卫：secret/credential 关键字 + 凭证类扩展名同时命中
+              -- （避免误伤 secret.go 等源码）
+              if name:match("[Ss]ecret") or name:match("[Cc]redential") then
+                local credential_exts = {
+                  "%.json$", "%.ya?ml$", "%.toml$", "%.ini$",
+                  "%.conf$", "%.cfg$", "%.env$", "%.txt$",
+                }
+                for _, ext in ipairs(credential_exts) do
+                  if name:match(ext) then return true end
+                end
+              end
 
               return false
             end

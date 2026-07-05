@@ -26,7 +26,7 @@ vim.opt.ambiwidth = "single"
 
 -- 光标上下保留上下文行数：自适应窗口高度（大窗口 8 行，窄分屏 3 行）
 vim.opt.scrolloff = 3
-vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter" }, {
+vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter", "BufEnter" }, {
   group = vim.api.nvim_create_augroup("AdaptiveScrolloff", { clear = true }),
   callback = function()
     local h = vim.api.nvim_win_get_height(0)

@@ -4,7 +4,7 @@
 return {
   {
     "nacro90/numb.nvim",
-    event = "VeryLazy",
+    event = "CmdlineEnter",
     opts = {
       show_numbers = true,
       show_cursorline = true,

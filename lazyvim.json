@@ -3,7 +3,6 @@
     "lazyvim.plugins.extras.lang.go",
     "lazyvim.plugins.extras.lang.markdown",
     "lazyvim.plugins.extras.lang.typescript",
-    "lazyvim.plugins.extras.lang.vue",
     "lazyvim.plugins.extras.lang.json",
     "lazyvim.plugins.extras.lang.yaml",
     "lazyvim.plugins.extras.lang.docker",
@@ -22,13 +21,11 @@
     "lazyvim.plugins.extras.editor.illuminate",
     "lazyvim.plugins.extras.util.mini-hipatterns",
     "lazyvim.plugins.extras.editor.refactoring",
-    "lazyvim.plugins.extras.editor.overseer",
     "lazyvim.plugins.extras.lang.git",
     "lazyvim.plugins.extras.lang.python",
-    "lazyvim.plugins.extras.lang.sql",
     "lazyvim.plugins.extras.lang.toml",
-    "lazyvim.plugins.extras.lang.tailwind",
-    "lazyvim.plugins.extras.util.rest"
+    "lazyvim.plugins.extras.util.rest",
+    "lazyvim.plugins.extras.coding.neogen"
   ],
   "install_version": 8,
   "news": {
