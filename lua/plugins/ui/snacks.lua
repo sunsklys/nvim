@@ -14,6 +14,11 @@ return {
           explorer = {
             hidden = true, -- 显示隐藏文件（dotfiles）
             ignored = true, -- 显示 .gitignore 忽略的文件
+            -- 列宽按屏宽百分比（0.15 = 15%）。snacks explorer 默认走 sidebar preset：固定 40 列。
+            -- 双层 layout：外层 picker layout config（含 preset/preview）deep-merge 进默认 sidebar preset，
+            -- 故 preview="main"/position="left"/backdrop=false 等全部保留，不破坏现有布局；内层才是 layout box。
+            -- min_width 给窄屏兜底，避免 15% 在小屏不足 30 列时被默认 min_width=40 反向拉宽。
+            layout = { layout = { width = 0.15, min_width = 30 } },
           },
         },
         actions = {
