@@ -20,9 +20,8 @@ return {
     opts = {
       view = {
         -- merge 工具布局：三方 diff（左 ours / 中 base /右 theirs）
-        merge_tool = { layout = "diff3" },
-        -- 默认 diff 布局：双栏
-        default = { layout = "diff2_horizontal" },
+        -- 合法值仅 diff3_horizontal/vertical/mixed、diff4_mixed、diff1_plain；曾误写 "diff3" 会触发 err 通知并回退默认
+        merge_tool = { layout = "diff3_horizontal" },
       },
       -- 文件面板默认折叠
       hooks = {

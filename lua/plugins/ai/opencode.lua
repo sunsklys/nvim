@@ -57,10 +57,14 @@ local function tui_send(bytes)
   return false
 end
 
+local function notify_no_oc()
+  vim.notify("找不到 OpenCode 终端", vim.log.levels.WARN)
+end
+
 -- buffer-local 滚动：发送失败时提示
 local function tsnd_warn(bytes)
   if not tui_send(bytes) then
-    vim.notify("找不到 OpenCode 终端", vim.log.levels.WARN)
+    notify_no_oc()
   end
 end
 
@@ -72,7 +76,7 @@ local function tscroll(lhs, key, desc)
       local n = vim.v.count1
       local bytes = OC_KEYS[key]
       if bytes and not tui_send(n == 1 and bytes or bytes:rep(n)) then
-        vim.notify("找不到 OpenCode 终端", vim.log.levels.WARN)
+        notify_no_oc()
       end
     end,
     desc = desc,

@@ -27,7 +27,7 @@ vim.keymap.set("n", "<leader>gdw", ":Gitsigns toggle_word_diff<CR>", { desc = "�
 --   * 任何终端都可用 <C-;> 兜底单击立即退
 local nested_tui_patterns = {
   "opencode", "lazygit", "fzf", "sk", "htop", "top", "tig",
-  "man", "less", "more", "tmux", "vim", "nano", "emacs",  -- "vim" 子串已覆盖 nvim；"vi" 也覆盖 vim，故两者不再单列
+  "man", "less", "more", "tmux", "vim", "nvim", "nano", "emacs",  -- 改为程序名精确匹配（见下方 tbl_contains），故显式列出 nvim
 }
 
 vim.api.nvim_create_autocmd("TermOpen", {
@@ -44,15 +44,11 @@ vim.api.nvim_create_autocmd("TermOpen", {
       --      nil/空 cmd 都当普通 shell 处理（不命中 nested_tui_patterns）
 
       local cmd = info.cmd or ""
-      if type(cmd) == "table" then cmd = table.concat(cmd, " ") end
-
-      local is_nested = false
-      for _, pat in ipairs(nested_tui_patterns) do
-        if cmd:match(pat) then
-          is_nested = true
-          break
-        end
-      end
+      if type(cmd) == "table" then cmd = cmd[1] or "" end
+      -- 取程序名（首词 + 剥路径），精确匹配避免 "manager"/"task"/"desktop" 等子串误判
+      local first = cmd:match("^%s*(%S+)") or ""
+      local prog = first:match("([^/]+)$") or first
+      local is_nested = vim.tbl_contains(nested_tui_patterns, prog)
 
       if not is_nested then
         -- 普通 shell：buffer-local 覆盖 snacks 的双击 ESC 策略
