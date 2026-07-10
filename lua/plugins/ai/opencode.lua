@@ -34,7 +34,9 @@ return {
       }
 
       local last_redraw = 0
+      local group = vim.api.nvim_create_augroup("OpenCodeStatus", { clear = true })
       vim.api.nvim_create_autocmd("User", {
+        group = group,
         pattern = "OpencodeEvent:session.status",
         callback = function()
           local now = vim.uv.hrtime() / 1e6

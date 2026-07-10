@@ -2,7 +2,8 @@
 -- 支持 Go (coverprofile) / Python (coverage.py) / JS (lcov) 等格式
 -- 工作流:跑测试(<leader>tr)生成 coverage.out → <leader>tL 加载 → <leader>tC 切换显示
 -- signcolumn 高亮:未覆盖行红色,覆盖行绿色(可定制)
--- <leader>tL 之后还可以 :CoverageSummary 弹摘要窗
+-- <leader>tL 加载 / <leader>tC 切换显示 / <leader>tM 摘要窗
+-- （tL/tC/tM 避开 LazyVim test.core 已占键位：小写 tt/ta/tr/tl/ts/to/tw/td，大写 tT/tO/tS）
 return {
   {
     "andythigpen/nvim-coverage",
@@ -13,6 +14,7 @@ return {
     keys = {
       { "<leader>tL", "<cmd>CoverageLoad<cr>", desc = "加载覆盖率文件" },
       { "<leader>tC", "<cmd>CoverageToggle<cr>", desc = "切换覆盖率显示" },
+      { "<leader>tM", "<cmd>CoverageSummary<cr>", desc = "覆盖率摘要窗" },
     },
   },
 }

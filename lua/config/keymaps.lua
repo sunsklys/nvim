@@ -27,7 +27,7 @@ vim.keymap.set("n", "<leader>gdw", ":Gitsigns toggle_word_diff<CR>", { desc = "�
 --   * 任何终端都可用 <C-;> 兜底单击立即退
 local nested_tui_patterns = {
   "opencode", "lazygit", "fzf", "sk", "htop", "top", "tig",
-  "man", "less", "more", "tmux", "vim", "nvim", "vi", "nano", "emacs",
+  "man", "less", "more", "tmux", "vim", "nano", "emacs",  -- "vim" 子串已覆盖 nvim；"vi" 也覆盖 vim，故两者不再单列
 }
 
 vim.api.nvim_create_autocmd("TermOpen", {

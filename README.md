@@ -74,7 +74,8 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
 | `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
 | `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
-| `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开） + gofumpt 显式声明（LazyVim 默认已开；unusedwrite/nilness/useany LazyVim 已提供，本文件不重复） |
+| `editor/coverage.lua` | nvim-coverage | 测试覆盖率显示（配合 neotest `-cover` flag；`<leader>tL` 加载 / `<leader>tC` 切换 / `<leader>tM` 摘要） |
+| `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开）。gofumpt/nilness/unusedparams/unusedwrite/useany LazyVim 默认已提供，本文件不重复 |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
 | `ui/baleia.lua` | baleia.nvim | log 文件 ANSI 颜色解码（`*.log`/`*.out` 自动 + `:BaleiaColorize` 手动） |
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
@@ -106,6 +107,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
 | `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
 | `<leader>gdv/gdV/gdH/gdc` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
+| `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
 | `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
 | `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |

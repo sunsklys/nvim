@@ -6,6 +6,7 @@ return {
     opts = {
       style = "night",
       styles = {
+        -- sidebars/floats 用 "normal"：与主编辑区背景统一（tokyonight 默认 "dark" 让侧栏/浮窗偏深，与本仓库的 LazyVim 默认背景观感割裂）
         sidebars = "normal",
         floats = "normal",
       },

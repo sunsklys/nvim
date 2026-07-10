@@ -92,9 +92,6 @@ return {
           },
         },
       },
-      cheatsheet = {
-        enabled = true,
-      },
     },
   },
 }
