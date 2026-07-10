@@ -100,8 +100,13 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 | `<leader>asi` | 中断当前会话 | ai/opencode.lua |
 | `<leader>asL` | 跳到最新消息 | ai/opencode.lua |
 | `<leader>asP` | 分享当前会话 | ai/opencode.lua |
-| `<leader>avU` | 向上滚动 OpenCode 输出 | ai/opencode.lua |
-| `<leader>avD` | 向下滚动 OpenCode 输出 | ai/opencode.lua |
+| `<leader>avk/avj` | OpenCode 上滚/下滚一行（支持 count：`10<leader>avk` = 连续 10 行） | ai/opencode.lua |
+| `<leader>avu/avd` | OpenCode 上滚/下滚半页（支持 count） | ai/opencode.lua |
+| `<leader>avU/avD` | OpenCode 上翻/下翻整页（支持 count） | ai/opencode.lua |
+| `<leader>avg/avG` | OpenCode 跳到顶部/底部 | ai/opencode.lua |
+| `K`/`J` (终端 buffer) | OpenCode 终端 normal mode 下连按/按住上下翻一行（PTY 直发） | ai/opencode.lua |
+| `<C-u>`/`<C-d>` (终端 buffer) | OpenCode 终端内上下翻半页 | ai/opencode.lua |
+| `<C-b>`/`<C-f>` (终端 buffer) | OpenCode 终端内上下翻整页 | ai/opencode.lua |
 | `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
 | `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |

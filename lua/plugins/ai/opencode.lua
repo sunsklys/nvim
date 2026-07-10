@@ -7,7 +7,8 @@
 -- - SSE 事件流 (OpencodeEvent:*)
 
 local opencode_cmd = "opencode --port"
-local terminal_opts = { win = { position = "right", width = 0.3, enter = false } }
+local terminal_opts = { win = { position = "right", width = 0.3, enter = true } }
+local server_opts = { win = { position = "right", width = 0.3, enter = false } }
 local nx = { "n", "x" }
 
 -- keymap helpers：消除 prompt/command 类 key 的重复样板
@@ -16,6 +17,66 @@ local function prompt(lhs, text, desc)
 end
 local function cmd(lhs, command, desc)
   return { lhs, function() require("opencode").command(command) end, desc = desc }
+end
+-- 查找 OpenCode 终端的 PTY channel
+local function get_oc_chan()
+  if vim.bo.buftype == "terminal" and vim.api.nvim_buf_get_name(0):match("opencode") then
+    local ch = vim.bo.channel
+    if ch and ch > 0 then return ch end
+  end
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].buftype == "terminal" then
+      local name = vim.api.nvim_buf_get_name(buf)
+      if name:match("opencode") then
+        local ch = vim.bo[buf].channel
+        if ch and ch > 0 then return ch end
+      end
+    end
+  end
+end
+
+-- OpenCode TUI 滚动键的字节编码（xterm: Ctrl+Alt+X = ESC(0x1b) + Ctrl+X）
+local OC_KEYS = {
+  line_up   = "\x1b\x19", -- Ctrl+Alt+Y
+  line_down = "\x1b\x05", -- Ctrl+Alt+E
+  half_up   = "\x1b\x15", -- Ctrl+Alt+U
+  half_down = "\x1b\x04", -- Ctrl+Alt+D
+  page_up   = "\x1b\x02", -- Ctrl+Alt+B
+  page_down = "\x1b\x06", -- Ctrl+Alt+F
+  first     = "\x07",     -- Ctrl+G
+  last      = "\x1b\x07", -- Ctrl+Alt+G
+}
+
+-- 通过 PTY 直接发送字节给 OpenCode TUI（绕过 HTTP 和终端键穿透问题）
+local function tui_send(bytes)
+  local ch = get_oc_chan()
+  if ch then
+    vim.api.nvim_chan_send(ch, bytes)
+    return true
+  end
+  return false
+end
+
+-- buffer-local 滚动：发送失败时提示
+local function tsnd_warn(bytes)
+  if not tui_send(bytes) then
+    vim.notify("找不到 OpenCode 终端", vim.log.levels.WARN)
+  end
+end
+
+-- PTY 滚动 helper：支持 count（5<leader>avk = 连续上滚 5 行）
+local function tscroll(lhs, key, desc)
+  return {
+    lhs,
+    function()
+      local n = vim.v.count1
+      local bytes = OC_KEYS[key]
+      if bytes and not tui_send(n == 1 and bytes or bytes:rep(n)) then
+        vim.notify("找不到 OpenCode 终端", vim.log.levels.WARN)
+      end
+    end,
+    desc = desc,
+  }
 end
 
 return {
@@ -28,7 +89,7 @@ return {
       vim.g.opencode_opts = {
         server = {
           start = function()
-            require("snacks.terminal").open(opencode_cmd, terminal_opts)
+            require("snacks.terminal").open(opencode_cmd, server_opts)
           end,
         },
       }
@@ -44,6 +105,26 @@ return {
             last_redraw = now
             vim.defer_fn(function() vim.cmd("redrawstatus") end, 0)
           end
+        end,
+      })
+
+      -- OpenCode 终端 buffer-local 滚动键（按住 K/J 连续翻，无需 leader 前缀）
+      local scroll_grp = vim.api.nvim_create_augroup("OpenCodeScroll", { clear = true })
+      vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter" }, {
+        group = scroll_grp,
+        callback = function(args)
+          if vim.bo[args.buf].buftype ~= "terminal" then return end
+          if vim.b[args.buf].oc_scroll then return end -- 已绑定，跳过
+          local name = vim.api.nvim_buf_get_name(args.buf)
+          if not name:match("opencode") then return end
+          vim.b[args.buf].oc_scroll = true
+          local o = { buffer = args.buf, silent = true, nowait = true }
+          vim.keymap.set("n", "K", function() tsnd_warn(OC_KEYS.line_up) end, o)
+          vim.keymap.set("n", "J", function() tsnd_warn(OC_KEYS.line_down) end, o)
+          vim.keymap.set("n", "<C-u>", function() tsnd_warn(OC_KEYS.half_up) end, o)
+          vim.keymap.set("n", "<C-d>", function() tsnd_warn(OC_KEYS.half_down) end, o)
+          vim.keymap.set("n", "<C-b>", function() tsnd_warn(OC_KEYS.page_up) end, o)
+          vim.keymap.set("n", "<C-f>", function() tsnd_warn(OC_KEYS.page_down) end, o)
         end,
       })
     end,
@@ -76,9 +157,17 @@ return {
       cmd("<leader>asL", "session.last", "跳到最新消息"),
       cmd("<leader>asP", "session.share", "分享当前会话"),
 
-      -- 视图/滚动子组 <leader>av*（原 <leader>oU/oD）
-      cmd("<leader>avU", "session.half.page.up", "向上滚动 OpenCode"),
-      cmd("<leader>avD", "session.half.page.down", "向下滚动 OpenCode"),
+      -- 视图/滚动子组 <leader>av*（PTY 直发按键字节，绕过 HTTP 和终端键穿透）
+      -- 支持 count 前缀：10<leader>avk = 连续上滚 10 行
+      { "<leader>av", group = "OpenCode 滚动" },
+      tscroll("<leader>avk", "line_up", "上滚（count 行）"),
+      tscroll("<leader>avj", "line_down", "下滚（count 行）"),
+      tscroll("<leader>avu", "half_up", "上滚半页"),
+      tscroll("<leader>avd", "half_down", "下滚半页"),
+      tscroll("<leader>avU", "page_up", "上翻整页"),
+      tscroll("<leader>avD", "page_down", "下翻整页"),
+      tscroll("<leader>avg", "first", "跳到顶部"),
+      tscroll("<leader>avG", "last", "跳到底部"),
 
       -- Operator + dot-repeat（不随命名空间迁移）
       { "go", function() return require("opencode").operator("@this ") end, mode = nx, expr = true, desc = "把范围发给 OpenCode" },
