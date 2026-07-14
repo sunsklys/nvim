@@ -2,6 +2,24 @@
 package.path = package.path .. ";" .. vim.fn.expand("$HOME/.luarocks/share/lua/5.1/?.lua") .. ";" .. vim.fn.expand("$HOME/.luarocks/share/lua/5.1/?/init.lua")
 package.cpath = package.cpath .. ";" .. vim.fn.expand("$HOME/.luarocks/lib/lua/5.1/?.so")
 
+-- 确保 snacks.lazygit 能加载本仓库的 lazygit.yml + tokyonight lazygit theme
+-- 问题：从 GUI/Spotlight 启动 nvim 时进程不读 ~/.zshrc，LG_CONFIG_FILE 为空，
+--       snacks.lazygit 源码（lua/snacks/lazygit.lua:77-115）检测到空则只加载自己生成的
+--       theme（os.editPreset/gui.nerdFontsVersion/color），用户 lazygit.yml 完全跳过。
+-- 修复：在 nvim 启动早期（options.lua 在所有插件 spec 之前加载）幂等注入 LG_CONFIG_FILE。
+--       从 zsh 启动 nvim 时这里已是 no-op（已有路径会被去重）；~/.zshrc 的 export 仍保留
+--       以便纯命令行调用 lazygit（不经过 nvim）时也加载本仓库配置。
+local function ensure_in_lg_config(path)
+  if vim.fn.filereadable(path) ~= 1 then return end
+  for p in string.gmatch(vim.env.LG_CONFIG_FILE or "", "([^,]+)") do
+    if vim.fs.normalize(p) == vim.fs.normalize(path) then return end -- 已存在，跳过
+  end
+  local existing = vim.env.LG_CONFIG_FILE or ""
+  vim.env.LG_CONFIG_FILE = path .. (existing ~= "" and "," .. existing or "")
+end
+ensure_in_lg_config(vim.fn.expand("$HOME/.config/nvim/lazygit.yml"))
+ensure_in_lg_config(vim.fn.expand("$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"))
+
 vim.g.lazyvim_eslint_auto_format = false
 vim.g.lazyvim_ts_lsp = "vtsls"
 -- LazyVim lang.python extra 默认用 pyright；用户偏好 basedpyright（fork，更严格类型检查）
