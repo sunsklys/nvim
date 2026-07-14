@@ -16,7 +16,7 @@ lazygit 默认在 macOS 上从 `~/Library/Application Support/lazygit/config.yml
 export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml,$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"
 ```
 
-- 第 1 个：本仓库的 `lazygit.yml` —— pager、editPreset、sidePanelWidth、nerdFontsVersion
+- 第 1 个：本仓库的 `lazygit.yml` —— pager、editPreset、sidePanelWidth
 - 第 2 个：`tokyonight.nvim` 提供的 lazygit 主题（边框、选中行等颜色，与 LazyVim 视觉一致）
 - 后者路径在 LazyVim 首启后由 lazy.nvim 自动下载，无需手工干预
 
@@ -180,7 +180,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 ### iTerm2 配置（TokyoNight 主题导入）
 
-本仓库根目录的 [`tokyonight_night.itermcolors`](./tokyonight_night.itermcolors) 是从 `tokyonight.nvim/extras/iterm/` 拷贝的 iTerm2 配色预设，让 iTerm2 的 16 色 + Background/Foreground 与 nvim 内部的 tokyonight night 主题完全一致。
+LazyVim 自带的 `tokyonight.nvim` 提供了 iTerm2 配色预设（`extras/iterm/tokyonight_night.itermcolors`），让 iTerm2 的 16 色 + Background/Foreground 与 nvim 内部的 tokyonight night 主题完全一致。预设路径在 LazyVim 首启后由 lazy.nvim 自动下载到 `~/.local/share/nvim/lazy/tokyonight.nvim/extras/iterm/`。
 
 > **必要性**：iTerm2 默认 `Background = #000000`（纯黑），而 nvim 内部用 `#1a1b26`（带紫蓝色调）。差值虽小但足以察觉 —— snacks terminal 里跑的 OpenCode / lazygit / zsh 等 TUI 程序的空区域会透出 iTerm2 背景色，看起来与 nvim 主编辑区「分层」。导入此预设后所有 TUI 视觉统一。
 
@@ -188,7 +188,7 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 1. iTerm2 → Settings → Profiles → 选中你的 Profile（默认 `Default`）
 2. `Colors` 标签 → 右下角 `Color Presets...` → `Import...`
-3. 选 `~/.config/nvim/tokyonight_night.itermcolors`
+3. 选 `~/.local/share/nvim/lazy/tokyonight.nvim/extras/iterm/tokyonight_night.itermcolors`
 4. 再次点 `Color Presets...` → 选 `tokyonight_night` 激活
 
 #### 配套设置（Alt 键）
