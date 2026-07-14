@@ -20,6 +20,24 @@ end
 ensure_in_lg_config(vim.fn.expand("$HOME/.config/nvim/lazygit.yml"))
 ensure_in_lg_config(vim.fn.expand("$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"))
 
+-- 让从 nvim 启动的 git 命令（含 lazygit 内的 git show）输出中文 Date。
+-- lazygit 的 ShowCmdObj (pkg/commands/git_commands/commit.go) 不传 --date 参数，
+-- commit 详情 patch 顶部的 Date: 字段由 git 全局 log.date 决定。
+-- 不写 ~/.gitconfig（那是用户系统级配置，不跟随 dotfiles 仓库迁移），
+-- 改用 git 官方环境变量 API（GIT_CONFIG_COUNT/KEY/VALUE）在 nvim 启动时注入。
+-- 范围：nvim 进程及其子进程（lazygit / :!git / nvim 内 fugitive 等）。
+-- 幂等：只在 key 未被占用时追加。
+local function set_git_config(key, value)
+  local count = tonumber(vim.env.GIT_CONFIG_COUNT or "0") or 0
+  for i = 0, count - 1 do
+    if vim.env["GIT_CONFIG_KEY_" .. i] == key then return end
+  end
+  vim.env.GIT_CONFIG_COUNT = tostring(count + 1)
+  vim.env["GIT_CONFIG_KEY_" .. count] = key
+  vim.env["GIT_CONFIG_VALUE_" .. count] = value
+end
+set_git_config("log.date", "format:%Y年%m月%d日 %H:%M")
+
 vim.g.lazyvim_eslint_auto_format = false
 vim.g.lazyvim_ts_lsp = "vtsls"
 -- LazyVim lang.python extra 默认用 pyright；用户偏好 basedpyright（fork，更严格类型检查）

@@ -23,6 +23,8 @@ export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml,$HOME/.local/share/nvim/la
 命令行 `git diff` 也走 delta + tokyonight 配色：需在 `~/.gitconfig` 设置 `core.pager = delta` 激活 delta，再通过 `[include]` 引入 `tokyonight.nvim/extras/delta/tokyonight_night.gitconfig`（后者仅含 plus/minus 颜色样式，不激活 delta 不生效）。
 lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.pagers` 直接驱动，不读 `~/.gitconfig`。
 
+lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git show`，该命令不传 `--date=`，由 git 全局 `log.date` 决定。为跟随本仓库迁移，不写 `~/.gitconfig`，而是在 `lua/config/options.lua` 通过 git 官方环境变量 API（`GIT_CONFIG_COUNT`/`GIT_CONFIG_KEY_*`/`GIT_CONFIG_VALUE_*`）注入 `log.date = format:%Y年%m月%d日 %H:%M`。范围：nvim 进程及其子进程（含 lazygit / `:!git` / nvim 内 fugitive 等插件）。效果：commit 详情、`git log`/`git show` 均输出 `Date:   2026年07月14日 16:01` 中文格式。
+
 ### 功能
 
 在 lazygit 中按 <kbd>|</kbd> 在两档 diff 视图间循环切换（需 lazygit 0.62+）：
