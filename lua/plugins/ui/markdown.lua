@@ -44,21 +44,10 @@ return {
     end,
   },
 
-  -- markdown-preview.nvim：浏览器实时预览（LazyVim 不包含，看复杂表格/Mermaid 时更直观）
+  -- markdown-preview.nvim：LazyVim lang.markdown extra 已含 cmd/build/keys/config，
+  -- 这里只覆盖本仓库偏好的 g 变量（端口固定 + 关 buffer 不关浏览器）
   {
     "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-    ft = { "markdown" },
-    keys = {
-      {
-        "<leader>cp",
-        "<cmd>MarkdownPreviewToggle<cr>",
-        desc = "Markdown Preview (browser)",
-      },
-    },
     init = function()
       -- auto_close=0：关闭 buffer 时不自动关闭浏览器预览（默认 1 会关）
       vim.g.mkdp_auto_close = 0
