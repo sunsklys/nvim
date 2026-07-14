@@ -16,7 +16,7 @@ lazygit 默认在 macOS 上从 `~/Library/Application Support/lazygit/config.yml
 export LG_CONFIG_FILE="$HOME/.config/nvim/lazygit.yml,$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"
 ```
 
-- 第 1 个：本仓库的 `lazygit.yml` —— pager、editPreset、sidePanelWidth、timeFormat/shortTimeFormat（中文时间）
+- 第 1 个：本仓库的 `lazygit.yml` —— pager、editPreset、sidePanelWidth、timeFormat/shortTimeFormat（中文时间）、branchLogCmd/allBranchesLogCmds（中文日期）
 - 第 2 个：`tokyonight.nvim` 提供的 lazygit 主题（边框、选中行等颜色，与 LazyVim 视觉一致）
 - 后者路径在 LazyVim 首启后由 lazy.nvim 自动下载，无需手工干预
 

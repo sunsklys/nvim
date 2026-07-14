@@ -14,6 +14,10 @@ git:
     # 第 2 档：delta 单栏（窄屏 / 逐行暂存更紧凑）
     #   必须显式 --side-by-side=false，否则会继承 ~/.gitconfig 的 [delta] side-by-side=true
     - pager: delta --paging=never --side-by-side=false
+  # 分支日志：默认 --date=relative 输出英文相对时间（"2 hours ago"），改成绝对中文
+  branchLogCmd: git log --graph --color=always --abbrev-commit --decorate --date=format:'%Y年%m月%d日 %H:%M' --pretty=medium {{branchName}} --
+  allBranchesLogCmds:
+    - git log --graph --all --color=always --abbrev-commit --decorate --date=format:'%Y年%m月%d日 %H:%M' --pretty=medium
 
 gui:
   # 收窄左侧文件列表（默认 0.3333），给并排 diff 留更多横向空间
