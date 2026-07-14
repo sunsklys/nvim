@@ -18,6 +18,11 @@ git:
 gui:
   # 收窄左侧文件列表（默认 0.3333），给并排 diff 留更多横向空间
   sidePanelWidth: 0.2
+  # 提交时间格式：Go time format（字面量中文嵌入）
+  # timeFormat 用于完整时间显示（如 commit 详情），shortTimeFormat 用于列表简略时间
+  # 默认 "02 Jan 06" / "3:04PM" 英文格式；这里改成中文习惯
+  timeFormat: "2006年1月2日 15:04"
+  shortTimeFormat: "1月2日 15:04"
 
 # 让 lazygit 的 `e` 键用 neovim 打开文件。
 # nvim-remote 预设：从 LazyVim <leader>gg 调起时，文件会在父 nvim 进程中打开（不新开）。
