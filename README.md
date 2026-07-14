@@ -25,6 +25,13 @@ lazygit 内部的 diff 不受影响 —— 它由 `lazygit.yml` 里的 `git.page
 
 lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git show`，该命令不传 `--date=`，由 git 全局 `log.date` 决定。为跟随本仓库迁移，不写 `~/.gitconfig`，而是在 `lua/config/options.lua` 通过 git 官方环境变量 API（`GIT_CONFIG_COUNT`/`GIT_CONFIG_KEY_*`/`GIT_CONFIG_VALUE_*`）注入 `log.date = format:%Y年%m月%d日 %H:%M`。范围：nvim 进程及其子进程（含 lazygit / `:!git` / nvim 内 fugitive 等插件）。效果：commit 详情、`git log`/`git show` 均输出 `Date:   2026年07月14日 16:01` 中文格式。
 
+**ripgrep + fd 全局忽略**（影响命令行搜索 + nvim 内 snacks_picker/fzf-lua 的 picker 结果）：
+
+- `~/.config/ripgrep/config` —— `rg` 自动跳过 `.git/node_modules/dist/build/.next/target/__pycache__/.venv/vendor`，开 smart-case + 150 列截断
+- `~/.config/fd/ignore` —— `fd` 同步忽略上述目录
+
+这两个是用户级开发工具配置（与 `~/.gitconfig` 同级），不随 dotfiles 仓库迁移，需手动写入或用脚本生成。换电脑后直接 `cp` 这两个文件即可。
+
 ### 功能
 
 在 lazygit 中按 <kbd>|</kbd> 在两档 diff 视图间循环切换（需 lazygit 0.62+）：
