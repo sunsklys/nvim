@@ -88,7 +88,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
 | `ui/baleia.lua` | baleia.nvim | log 文件 ANSI 颜色解码（`*.log`/`*.out` 自动 + `:BaleiaColorize` 手动） |
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
-| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim | 表格圆角边框 + 代码块边框 + 浏览器预览（固定端口 8765，跟随系统主题） |
+| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim + conform.nvim（prettier md 调优） | 表格圆角边框 + 代码块边框 + 浏览器预览（固定端口 8765，跟随系统主题）+ markdown 专属 prettier 参数（print-width=120、prose-wrap=preserve，仅 md/mdx 生效，项目本地 prettier 配置优先） |
 | `ui/snacks.lua` | snacks.nvim | picker actions（含 opencode 安全过滤） + explorer 显示隐藏文件 |
 | `ui/lualine.lua` | lualine.nvim | 状态栏追加 OpenCode 状态图标（idle/busy/error/未连接） |
 | `ui/theme.lua` | tokyonight.nvim | 主题（night style） |
@@ -122,7 +122,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
 | `<leader>gdv/gdV/gdH/gdc` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
 | `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
-| `<leader>cp` | Markdown 浏览器预览 | ui/markdown.lua |
+| `<leader>cp` | Markdown 浏览器预览 | LazyVim lang.markdown extra |
 | `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
 | `<leader>fl` | 列出运行中的 snacks 终端，选中 focus | config/keymaps.lua |
