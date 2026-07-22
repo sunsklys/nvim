@@ -133,9 +133,11 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 
 ### 自动保存
 
-`lua/config/autocmds.lua` 监听 `InsertLeave + FocusLost` 触发 `silent! update`（保留 undo 历史，跳过 buftype != "" / 只读 / 未命名 / pumvisible 缓冲区）。
+`lua/config/autocmds.lua` 监听 `InsertLeave + TextChanged + FocusLost`，300ms debounce 后写盘（合并连续 normal mode 按键为一次 IO）。写盘走 `pcall(vim.cmd, "update")`，错误通过 `vim.notify` 弹出（不再 `silent!` 吞掉）。
 
-不监听 `TextChanged`（避免 normal mode 每次按键触发全文 fsync）。后果：normal mode 编辑（`x`/`dd`/`p` 等）不会立即写盘，需切换插入模式或失焦才保存。崩溃恢复依赖 nvim 自身的 swap/undo 持久化。
+guard 跳过：`buftype != ""` / 只读 / 未修改 / 未命名 / 补全菜单开着（`pumvisible()`）。崩溃恢复依赖 nvim 自身的 swap/undo 持久化。
+
+LazyVim 默认 `opt.autowrite=true` 另处理「切 buffer 时写」场景，与本 autocmd 互补不冲突（两套独立机制并存）。
 
 ### 终端模式退出
 
