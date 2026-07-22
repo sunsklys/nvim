@@ -17,15 +17,36 @@
 -- 调 `prettier --find-config-path <filename>`，让 prettier 自己向上查找它支持的全部配置形式
 -- （.prettierrc.* / prettier.config.* / package.json "prettier" 字段 / .editorconfig 等）。
 -- 比手列文件名更准确（100% 覆盖）且零维护（自动跟随 prettier 演进）。
+--
+-- 比 LazyVim has_config 多一层防御：
+--   - LazyVim has_config 在 prettier 不可执行时会让 vim.fn.system 抛出 Lua 错误
+--     (E475: 'prettier' is not executable)。LazyVim 默认不调 has_config 所以未暴露；
+--     我们每次 markdown format 都调用，必须显式检查 executable + pcall 双保险。
+--   - 出现以下场景会触发：Mason 未加载完 / Mason PATH=skip / prettier 包未安装 /
+--     headless nvim 早期阶段。
+--
 -- 缓存键是 filename：prettier 按文件向上查，同一文件多次 format 命中缓存（首次 ~30-80ms，
 -- 之后 ~0ms）。限制：项目新增 .prettierrc 后 nvim 内不会立即生效，需重启 nvim（与 LazyVim 同样限制）。
 local has_prettier_config_cache = {}
 local function has_project_prettier_config(filename)
-  if has_prettier_config_cache[filename] == nil then
-    vim.fn.system({ "prettier", "--find-config-path", filename })
-    has_prettier_config_cache[filename] = (vim.v.shell_error == 0)
+  local cached = has_prettier_config_cache[filename]
+  if cached ~= nil then
+    return cached
   end
-  return has_prettier_config_cache[filename]
+  -- prettier 不可执行时直接返回 false（不缓存）—— Mason 可能还在 lazy-load，
+  -- 缓存会把后续正常状态锁死。下次调用会重新检测。
+  if vim.fn.executable("prettier") == 0 then
+    return false
+  end
+  -- pcall 保护：vim.fn.system 在 prettier 不可执行时抛 Lua 错误（E475）
+  -- executable 检查已防主因，pcall 兜底捕获其他意外错误（不缓存，下次重试）
+  local ok = pcall(vim.fn.system, { "prettier", "--find-config-path", filename })
+  if not ok then
+    return false
+  end
+  local has_config = vim.v.shell_error == 0
+  has_prettier_config_cache[filename] = has_config
+  return has_config
 end
 
 return {
@@ -89,7 +110,7 @@ return {
   --   - 项目本地有 prettier 配置则让项目配置赢（默认 prettier CLI 会覆盖 config file，这里反向让步）。
   --     检测由文件顶部的 has_project_prettier_config() 完成 —— 调 prettier --find-config-path，
   --     覆盖 prettier 支持的全部形式（.prettierrc.* / prettier.config.* / package.json "prettier"
-  --     字段 / .editorconfig），与 LazyVim has_config 同样实现，带 filename 缓存。
+  --     字段 / .editorconfig），同 LazyVim has_config 的方法，但多了 executable + pcall 双保险
   --   - vim.tbl_deep_extend("force", ...) 合并：保留 LazyVim 设置的 condition（has_parser 检测），仅追加字段。
   --   - 表格对齐：prettier 默认就格式化 GFM 表格的列宽与 padding，无需额外参数。
   {
