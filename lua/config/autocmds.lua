@@ -19,12 +19,13 @@ local function save(buf)
   -- nvim 内置错误 (readonly/swaplock) 不抛 lua error 也不设 v:errmsg, 只静默跳过.
   -- formatter 失败 (conform) 中断 BufWritePre 也不抛 error, 只是 update 没执行.
   -- 用 modified 状态作失败信号; 失败时再抓 exec output 拿原因.
-  local ok, err = pcall(vim.api.nvim_buf_call, buf, function() vim.cmd("update") end)
+  local ok, r = pcall(vim.api.nvim_buf_call, buf, function()
+    return vim.api.nvim_exec2("update", { output = true })
+  end)
   if not ok then
-    vim.notify("[autosave] " .. tostring(err), vim.log.levels.ERROR)
+    vim.notify("[autosave] " .. tostring(r), vim.log.levels.ERROR)
   elseif was_modified and vim.bo[buf].modified then
-    local r = vim.api.nvim_exec2("update", { output = true })
-    local reason = (r.output and r.output ~= "") and r.output or "unknown reason"
+    local reason = (r and r.output and r.output ~= "") and r.output or "unknown reason"
     vim.notify("[autosave] write failed: " .. reason, vim.log.levels.WARN)
   end
 end
