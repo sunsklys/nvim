@@ -1,15 +1,23 @@
 
 vim.keymap.set("n", "<leader>ga", function()
   local f = vim.fn.expand("%:p:r")
-  if f:match("_test$") then
-    local source = f:match("(.*)_test") .. ".go"
+  local is_test = f:match("_test$") ~= nil
+  -- Go 测试命名约定：foo_test.go（external）/ foo_internal_test.go（internal）
+  -- 剥离 _test + _internal 后缀得到源文件 basename（修复原贪婪匹配在 _internal_test 上提取出 foo_internal 的 bug）
+  local base = f:gsub("_test$", ""):gsub("_internal$", "")
+  if is_test then
+    local source = base .. ".go"
     if vim.fn.filereadable(source) == 1 then
       vim.cmd.edit(vim.fn.fnameescape(source))
     end
   else
-    local test = f .. "_test.go"
-    if vim.fn.filereadable(test) == 1 then
-      vim.cmd.edit(vim.fn.fnameescape(test))
+    -- 源文件 → 测试文件：优先找 _test.go，找不到再找 _internal_test.go
+    local candidates = { base .. "_test.go", base .. "_internal_test.go" }
+    for _, test in ipairs(candidates) do
+      if vim.fn.filereadable(test) == 1 then
+        vim.cmd.edit(vim.fn.fnameescape(test))
+        return
+      end
     end
   end
 end, { desc = "Go 测试/源文件切换" })
