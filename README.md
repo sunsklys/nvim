@@ -243,6 +243,37 @@ brew install lazygit git-delta neovim python3 go node imagemagick pkg-config lua
 - `neovim` 0.11.2+（实测 0.12.3，LazyVim v15 强制要求 0.11.2）
 - `imagemagick` + `pkg-config` + `luarocks` + `magick` rock：snacks.image 全格式图片渲染（Ghostty Kitty graphics protocol；无 magick 仅 PNG 可用）
 
+### 项目结构与 health check
+
+```
+lua/
+├── config/
+│   ├── env.lua         # 启动期 env 注入（luarocks + LG_CONFIG_FILE + GIT_CONFIG_*）
+│   ├── options.lua     # vim.opt 与 LazyVim g 变量（顶部 require env）
+│   ├── keymaps.lua     # 智能终端 ESC + Go 测试切换 + <leader>fl
+│   ├── autocmds.lua    # autosave（debounce + buf_call 上下文安全）
+│   └── lazy.lua        # lazy.nvim bootstrap + spec import
+├── plugins/            # lazy.nvim 插件 specs（按目录自动合并）
+│   ├── ai/             # opencode.nvim
+│   ├── coding/         # blink.cmp
+│   ├── editor/         # coverage/diffview/numb/quickfix
+│   ├── go/             # lsp + neotest
+│   └── ui/             # baleia/git/lualine/markdown/snacks/theme
+├── util/
+│   └── opencode.lua    # OpenCode PTY helpers（OC_KEYS/tui_send/tscroll）
+└── nvim-config/
+    └── health.lua      # 自定义 health check（:checkhealth nvim-config）
+```
+
+自定义 health check 在换电脑后一键验证外部依赖：
+
+```vim
+:checkhealth nvim-config    
+```
+
+检查项：nvim 版本、lazygit/delta/prettier/rg/fd/node/python3/go、magick rock、env 注入、ripgrep/fd 用户级配置。
+
+
 ### 查看 LazyVim 最新变更
 
 ```vim
