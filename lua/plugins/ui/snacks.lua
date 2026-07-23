@@ -34,7 +34,10 @@ return {
               -- 模式表：命中即拦截（无歧义路径/扩展名）
               local secret_patterns = {
                 "%.env[%w.]*$", -- .env / .env.local / .envrc
-                "id_rsa", -- id_rsa / id_rsa.pub
+                "^id_[%w]+$", -- SSH 私钥（无扩展名：id_rsa/ed25519/ecdsa/dsa）
+                "^id_[%w]+%.pub$", -- SSH 公钥（id_*.pub）
+                "/id_[%w]+$", -- 同上但路径上下文（/id_xxx）
+                "/id_[%w]+%.pub$", -- 路径上下文 .pub
                 "%.[pP]em$", -- *.pem
                 "%.p12$", -- *.p12 (PKCS12)
                 "%.pfx$", -- *.pfx (PKCS12)
@@ -49,6 +52,8 @@ return {
                 "%.tfvars$", -- Terraform 变量（常含云密钥）
                 "%.htpasswd$", -- HTTP basic auth
                 "^aws[_-]credentials$", -- aws_credentials / aws-credentials
+                "%.gnupg[/\\]", -- GPG 私钥环（对齐 opencode.json deny list）
+                "%.docker[/\\]config", -- docker registry auth token
               }
               for _, pat in ipairs(secret_patterns) do
                 if name:match(pat) then
