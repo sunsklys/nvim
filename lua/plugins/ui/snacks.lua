@@ -2,6 +2,62 @@
 -- 之前散在 lua/plugins/ui/explorer.lua（picker.sources.explorer）和
 -- lua/plugins/ai/opencode.lua（input + picker.actions.opencode_send），
 -- 合并到本文件提高可发现性。lazy.nvim 会自动合并各处 opts，行为零变化。
+
+-- module-local 常量：避免每次 picker action 触发都重建 patterns table。
+-- 命中即拦截（无歧义路径/扩展名）
+local SECRET_PATTERNS = {
+  "%.env[%w.]*$", -- .env / .env.local / .envrc
+  "^id_[%w]+$", -- SSH 私钥（无扩展名：id_rsa/ed25519/ecdsa/dsa）
+  "^id_[%w]+%.pub$", -- SSH 公钥（id_*.pub）
+  "/id_[%w]+$", -- 同上但路径上下文（/id_xxx）
+  "/id_[%w]+%.pub$", -- 路径上下文 .pub
+  "%.[pP]em$", -- *.pem
+  "%.p12$", -- *.p12 (PKCS12)
+  "%.pfx$", -- *.pfx (PKCS12)
+  "%.key$", -- *.key
+  "%.aws[/\\]", -- .aws/
+  "%.ssh[/\\]", -- .ssh/
+  "%.kube[/\\]config", -- kubeconfig
+  "%.npmrc$", -- npm registry token
+  "%.netrc$", -- machine credentials
+  "%.pypirc$", -- PyPI credentials
+  "%.git%-credentials$", -- git credential store
+  "%.tfvars$", -- Terraform 变量（常含云密钥）
+  "%.htpasswd$", -- HTTP basic auth
+  "^aws[_-]credentials$", -- aws_credentials / aws-credentials
+  "%.gnupg[/\\]", -- GPG 私钥环（对齐 opencode.json deny list）
+  "%.docker[/\\]config", -- docker registry auth token
+}
+
+-- 双层守卫：secret/credential 关键字 + 凭证类扩展名同时命中
+-- （避免误伤 secret.go 等源码）
+local CREDENTIAL_EXTS = {
+  "%.json$",
+  "%.ya?ml$",
+  "%.toml$",
+  "%.ini$",
+  "%.conf$",
+  "%.cfg$",
+  "%.env$",
+  "%.txt$",
+}
+
+local function is_secret(name)
+  for _, pat in ipairs(SECRET_PATTERNS) do
+    if name:match(pat) then
+      return true
+    end
+  end
+  if name:match("[Ss]ecret") or name:match("[Cc]redential") then
+    for _, ext in ipairs(CREDENTIAL_EXTS) do
+      if name:match(ext) then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 return {
   {
     "folke/snacks.nvim",
@@ -29,60 +85,7 @@ return {
             ---@type snacks.picker.Item[]
             local selected = picker:selected({ fallback = true })
             -- 安全护栏：疑似密钥/凭证文件不发给 AI provider（避免 .env/*.pem/id_rsa 一键泄漏）
-            -- Lua 模式不支持 | 或运算，逐个 match
-            local function is_secret(name)
-              -- 模式表：命中即拦截（无歧义路径/扩展名）
-              local secret_patterns = {
-                "%.env[%w.]*$", -- .env / .env.local / .envrc
-                "^id_[%w]+$", -- SSH 私钥（无扩展名：id_rsa/ed25519/ecdsa/dsa）
-                "^id_[%w]+%.pub$", -- SSH 公钥（id_*.pub）
-                "/id_[%w]+$", -- 同上但路径上下文（/id_xxx）
-                "/id_[%w]+%.pub$", -- 路径上下文 .pub
-                "%.[pP]em$", -- *.pem
-                "%.p12$", -- *.p12 (PKCS12)
-                "%.pfx$", -- *.pfx (PKCS12)
-                "%.key$", -- *.key
-                "%.aws[/\\]", -- .aws/
-                "%.ssh[/\\]", -- .ssh/
-                "%.kube[/\\]config", -- kubeconfig
-                "%.npmrc$", -- npm registry token
-                "%.netrc$", -- machine credentials
-                "%.pypirc$", -- PyPI credentials
-                "%.git%-credentials$", -- git credential store
-                "%.tfvars$", -- Terraform 变量（常含云密钥）
-                "%.htpasswd$", -- HTTP basic auth
-                "^aws[_-]credentials$", -- aws_credentials / aws-credentials
-                "%.gnupg[/\\]", -- GPG 私钥环（对齐 opencode.json deny list）
-                "%.docker[/\\]config", -- docker registry auth token
-              }
-              for _, pat in ipairs(secret_patterns) do
-                if name:match(pat) then
-                  return true
-                end
-              end
-
-              -- 双层守卫：secret/credential 关键字 + 凭证类扩展名同时命中
-              -- （避免误伤 secret.go 等源码）
-              if name:match("[Ss]ecret") or name:match("[Cc]redential") then
-                local credential_exts = {
-                  "%.json$",
-                  "%.ya?ml$",
-                  "%.toml$",
-                  "%.ini$",
-                  "%.conf$",
-                  "%.cfg$",
-                  "%.env$",
-                  "%.txt$",
-                }
-                for _, ext in ipairs(credential_exts) do
-                  if name:match(ext) then
-                    return true
-                  end
-                end
-              end
-
-              return false
-            end
+            -- 过滤逻辑见 module-local 的 is_secret() 函数（避免每次重建 patterns table）
             local items = vim.tbl_filter(
               function(i)
                 return i ~= nil
