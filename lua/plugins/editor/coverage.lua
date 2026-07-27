@@ -7,7 +7,7 @@
 return {
   {
     "andythigpen/nvim-coverage",
-    version = "*",
+    -- 不设 version/branch：让 lazy-lock.json 锁定的 commit 接管（项目长期 0.x，未来 minor 可能 breaking）。升级走 :Lazy sync 主动 review。
     dependencies = { "nvim-lua/plenary.nvim" },
     cmd = { "Coverage", "CoverageLoad", "CoverageShow", "CoverageHide", "CoverageToggle", "CoverageSummary" },
     opts = { auto_reload = true },

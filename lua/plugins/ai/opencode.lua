@@ -26,7 +26,7 @@ end
 return {
   {
     "nickjvandyke/opencode.nvim",
-    version = "*",
+    -- 不设 version/branch：让 lazy-lock.json 锁定的 commit 接管，避免 pre-1.0 项目发出新 tag 后被自动拉到 breaking 版本。升级走 :Lazy sync 主动 review。
     dependencies = { "folke/snacks.nvim" },
     config = function()
       ---@type opencode.Opts
