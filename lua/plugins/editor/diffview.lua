@@ -9,13 +9,13 @@ return {
     cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose", "DiffviewToggleFiles" },
     keys = {
       -- 进入 diffview（对比当前工作区 vs HEAD）
-      { "<leader>gdv", "<cmd>DiffviewOpen<cr>", desc = "Diffview 工作区对比" },
+      { "<leader>gvv", "<cmd>DiffviewOpen<cr>", desc = "Diffview 工作区对比" },
       -- 查看文件历史（git log 当前文件）
-      { "<leader>gdV", "<cmd>DiffviewFileHistory %<cr>", desc = "Diffview 文件历史" },
+      { "<leader>gvV", "<cmd>DiffviewFileHistory %<cr>", desc = "Diffview 文件历史" },
       -- 查看整个仓库历史
-      { "<leader>gdH", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview 仓库历史" },
+      { "<leader>gvH", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview 仓库历史" },
       -- 关闭 diffview（回到原 buffer）
-      { "<leader>gdc", "<cmd>DiffviewClose<cr>", desc = "Diffview 关闭" },
+      { "<leader>gvc", "<cmd>DiffviewClose<cr>", desc = "Diffview 关闭" },
     },
     opts = {
       view = {

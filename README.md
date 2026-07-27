@@ -120,7 +120,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
 | `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
-| `<leader>gdv/gdV/gdH/gdc` | Diffview 工作区对比/文件历史/仓库历史/关闭 | editor/diffview.lua |
+| `<leader>gvv/gvV/gvH/gvc` | Diffview 工作区对比/文件历史/仓库历史/关闭（避开 LazyVim snacks_picker 的 `<leader>gd`） | editor/diffview.lua |
 | `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
 | `<leader>cp` | Markdown 浏览器预览 | LazyVim lang.markdown extra |
 | `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
@@ -161,9 +161,9 @@ LazyVim 默认 `opt.autowrite=true` 另处理「切 buffer 时写」场景，与
 | 场景 | 工具 | 快捷键 |
 | --- | --- | --- |
 | 行内词级 diff（当前文件，快速） | gitsigns | `<leader>gdw`（toggle） |
-| 跨文件 / 工作区全对比 | diffview | `<leader>gdv` |
+| 跨文件 / 工作区全对比 | diffview | `<leader>gvv` |
 | commit/staging/全 repo（含 lazygit side-by-side） | lazygit | `<leader>gg` |
-| 文件历史 | diffview | `<leader>gdV`（当前文件）/ `<leader>gdH`（全仓库） |
+| 文件历史 | diffview | `<leader>gvV`（当前文件）/ `<leader>gvH`（全仓库） |
 | merge 冲突三方对比 | diffview | `:DiffviewOpen`（自动检测冲突） |
 
 按 `|` 在 lazygit 内的两档 diff（并排 / 单栏）间切换。
