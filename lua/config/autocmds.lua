@@ -3,6 +3,10 @@
 -- 数据安全冗余：LazyVim 默认 autowrite=true 在 BufLeave 类命令时也会写，两套机制互补。
 local group = vim.api.nvim_create_augroup("autosave", { clear = true })
 
+-- timer 存 Lua 表里：vim.b[buf] 是 nvim_buf_set_var 代理，只能持 typval 可转类型（string/number/list/
+-- dict/bool/funcref）；vim.defer_fn 返回的 uv_timer_t 是 userdata，赋给 vim.b[buf]._autosave_timer 会触发
+-- E5012 "Couldn't convert lua value"（__newindex 失败）。
+local timers = {}
 local function should_save(buf)
   if not vim.api.nvim_buf_is_valid(buf) then return false end
   local bo = vim.bo[buf]
@@ -36,13 +40,21 @@ vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged", "FocusLost" }, {
   callback = function(ev)
     local buf = ev.buf
     -- per-buffer timer：跨 buffer 切换不会互相取消 debounce 队列
-    local t = vim.b[buf]._autosave_timer
+    local t = timers[buf]
     if t then t:stop() end
-    vim.b[buf]._autosave_timer = vim.defer_fn(function()
+    timers[buf] = vim.defer_fn(function()
+      timers[buf] = nil
       save(buf)
-      if vim.api.nvim_buf_is_valid(buf) then
-        vim.b[buf]._autosave_timer = nil
-      end
     end, 300)
+  end,
+})
+
+-- buffer 卸载时清掉 timer 槽，避免 stale 引用阻止 uv_timer_t 被 GC
+vim.api.nvim_create_autocmd("BufUnload", {
+  group = group,
+  callback = function(ev)
+    local t = timers[ev.buf]
+    if t then t:stop() end
+    timers[ev.buf] = nil
   end,
 })
