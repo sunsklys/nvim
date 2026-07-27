@@ -1,6 +1,7 @@
 -- 自动保存：normal/insert 改动后 debounce 写盘。错误可见（不再 silent! 吞掉）。
+-- per-buffer timer：每个 buffer 独立 debounce，避免跨 buffer 切换打断他 buffer 的 save 队列。
+-- 数据安全冗余：LazyVim 默认 autowrite=true 在 BufLeave 类命令时也会写，两套机制互补。
 local group = vim.api.nvim_create_augroup("autosave", { clear = true })
-local timer = nil
 
 local function should_save(buf)
   if not vim.api.nvim_buf_is_valid(buf) then return false end
@@ -33,11 +34,15 @@ end
 vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged", "FocusLost" }, {
   group = group,
   callback = function(ev)
-    -- debounce 300ms：连续 normal mode 按键（dd/jjj..）合并为一次写盘
-    if timer then timer:stop() end
-    timer = vim.defer_fn(function()
-      save(ev.buf)
-      timer = nil
+    local buf = ev.buf
+    -- per-buffer timer：跨 buffer 切换不会互相取消 debounce 队列
+    local t = vim.b[buf]._autosave_timer
+    if t then t:stop() end
+    vim.b[buf]._autosave_timer = vim.defer_fn(function()
+      save(buf)
+      if vim.api.nvim_buf_is_valid(buf) then
+        vim.b[buf]._autosave_timer = nil
+      end
     end, 300)
   end,
 })
