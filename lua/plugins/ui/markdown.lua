@@ -25,28 +25,22 @@
 --   - 出现以下场景会触发：Mason 未加载完 / Mason PATH=skip / prettier 包未安装 /
 --     headless nvim 早期阶段。
 --
--- 缓存键是 filename：prettier 按文件向上查，同一文件多次 format 命中缓存（首次 ~30-80ms，
--- 之后 ~0ms）。限制：项目新增 .prettierrc 后 nvim 内不会立即生效，需重启 nvim（与 LazyVim 同样限制）。
-local has_prettier_config_cache = {}
+-- 不缓存结果：每次调用都调 `prettier --find-config-path` 查最新状态（30-80ms，
+-- format 本身已几百 ms，占比可忽略）。收益：项目新增/删除 .prettierrc 后立生效，
+-- 不需重启 nvim。DirChanged / fs watcher 方案都解决不了外部 shell 新增配置的场景。
 local function has_project_prettier_config(filename)
-  local cached = has_prettier_config_cache[filename]
-  if cached ~= nil then
-    return cached
-  end
-  -- prettier 不可执行时直接返回 false（不缓存）—— Mason 可能还在 lazy-load，
-  -- 缓存会把后续正常状态锁死。下次调用会重新检测。
+  -- prettier 不可执行时直接返回 false —— Mason 可能还在 lazy-load，
+  -- 下次 format 时重试（无缓存白纸状态，避免锁死）
   if vim.fn.executable("prettier") == 0 then
     return false
   end
   -- pcall 保护：vim.fn.system 在 prettier 不可执行时抛 Lua 错误（E475）
-  -- executable 检查已防主因，pcall 兜底捕获其他意外错误（不缓存，下次重试）
+  -- executable 检查已防主因，pcall 兜底捕获其他意外错误
   local ok = pcall(vim.fn.system, { "prettier", "--find-config-path", filename })
   if not ok then
     return false
   end
-  local has_config = vim.v.shell_error == 0
-  has_prettier_config_cache[filename] = has_config
-  return has_config
+  return vim.v.shell_error == 0
 end
 
 return {
