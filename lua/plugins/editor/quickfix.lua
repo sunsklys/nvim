@@ -11,7 +11,9 @@ return {
         win_height = 12,
         win_vheight = 12,
         delay_syntax = 80, -- 语法高亮延迟（ms），降低大文件卡顿
-        border_chars = { "┃", "┃", "━", "━", "┏", "┓", "┗", "┛", "█" },
+        -- nvim-bqf 用 border 字段（接受 string|string[]），原 border_chars 是无效 key 被静默忽略
+        -- 数组顺序：N, NE, E, SE, S, SW, W, NW（nvim float border 标准）
+        border = { "━", "┓", "┃", "┛", "━", "┗", "┃", "┏" },
       },
       -- 快捷键（在 quickfix 窗口内）
       func_map = {

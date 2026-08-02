@@ -96,9 +96,11 @@ return {
                   vim.notify("跳过疑似密钥/凭证文件: " .. content, vim.log.levels.WARN)
                   return nil
                 end
-                return item.file
-                    and require("opencode").format({ path = item.file, from = item.pos, to = item.end_pos })
-                  or item.text
+                -- snacks picker pos[2]/end_pos[2] 是 0-based col，opencode.format 期望 1-based：+1 转换
+                -- 显式 fallback 替代 a and b or c：format 返回 nil 时落入 item.file（路径字符串），避免 item.text 空字符串
+                local from = item.pos and { item.pos[1], item.pos[2] + 1 } or nil
+                local to = item.end_pos and { item.end_pos[1], item.end_pos[2] + 1 } or nil
+                return require("opencode").format({ path = item.file, from = from, to = to }) or item.file
               end, selected)
             )
             if #items == 0 then
