@@ -98,8 +98,10 @@ return {
                 end
                 -- snacks picker pos[2]/end_pos[2] 是 0-based col，opencode.format 期望 1-based：+1 转换
                 -- 显式 fallback 替代 a and b or c：format 返回 nil 时落入 item.file（路径字符串），避免 item.text 空字符串
-                local from = item.pos and { item.pos[1], item.pos[2] + 1 } or nil
-                local to = item.end_pos and { item.end_pos[1], item.end_pos[2] + 1 } or nil
+                -- pos[2]/end_pos[2] 可能为 nil（某些 source 只设 line），用 truthy 检查避免 nil+1 报错
+                local function shift(pos) return pos and { pos[1], pos[2] and pos[2] + 1 or nil } or nil end
+                local from = shift(item.pos)
+                local to = shift(item.end_pos)
                 return require("opencode").format({ path = item.file, from = from, to = to }) or item.file
               end, selected)
             )
