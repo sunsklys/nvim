@@ -4,7 +4,7 @@
 return {
   {
     "nacro90/numb.nvim",
-    event = "CmdlineEnter",
+    keys = ":",  -- 仅在按 : 时加载（比 CmdlineEnter 更 lazy）
     opts = {
       show_numbers = true,
       show_cursorline = true,

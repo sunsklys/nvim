@@ -9,7 +9,6 @@ return {
   {
     "m00qek/baleia.nvim",
     name = "baleia",
-    lazy = true,
     -- event 触发：打开 .log/.out 时 lazy 加载（之前仅靠 cmd，自动 colorize 完全不工作）
     event = { "BufReadPost *.log", "BufReadPost *.out", "BufNewFile *.log", "BufNewFile *.out" },
     cmd = "BaleiaColorize",

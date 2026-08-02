@@ -40,26 +40,26 @@ return {
       require("auto-save").setup(opts)
       warn_if_save_failed()
 
-  -- 用 Snacks.toggle 注册（与 LazyVim <leader>u* 命名空间一致，在 toggle picker 里可见状态）。
-  -- 比 keys="<cmd>ASToggle<CR>" 更地道：状态可见、自动 picker。
-  -- Snacks 在 VeryLazy 加载，auto-save 用 BufReadPost lazy load 时机早于 Snacks，需延后到 VeryLazy。
-  -- 注意：LazyVim 的 on_very_lazy 是内部 API 不公开，这里手写等效逻辑。
-  local function on_very_lazy(fn)
-    if vim.v.vim_did_enter == 1 then
-      vim.schedule(fn)
-    else
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "VeryLazy", once = true, callback = fn,
-      })
-    end
-  end
-  on_very_lazy(function()
-    Snacks.toggle.new({
-      name = "Auto Save",
-      get = function() return require("auto-save").enabled() end,
-      set = function() require("auto-save").toggle() end,
-    }):map("<leader>ut")  -- t = toggle 通用前缀；LazyVim <leader>u* 单字母几乎满，t 未占用
-  end)
+      -- 用 Snacks.toggle 注册（与 LazyVim <leader>u* 命名空间一致，在 toggle picker 里可见状态）。
+      -- 比 keys="<cmd>ASToggle<CR>" 更地道：状态可见、自动 picker。
+      -- Snacks 在 VeryLazy 加载，auto-save 用 BufReadPost lazy load 时机早于 Snacks，需延后到 VeryLazy。
+      -- 注意：LazyVim 的 on_very_lazy 是内部 API 不公开，这里手写等效逻辑。
+      local function on_very_lazy(fn)
+        if vim.v.vim_did_enter == 1 then
+          vim.schedule(fn)
+        else
+          vim.api.nvim_create_autocmd("User", {
+            pattern = "VeryLazy", once = true, callback = fn,
+          })
+        end
+      end
+      on_very_lazy(function()
+        Snacks.toggle.new({
+          name = "Auto Save",
+          get = function() return require("auto-save").enabled() end,
+          set = function() require("auto-save").toggle() end,
+        }):map("<leader>ut")  -- t = toggle 通用前缀；LazyVim <leader>u* 单字母几乎满，t 未占用
+      end)
     end,
     opts = {
       enabled = true,
