@@ -83,6 +83,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
 | `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
 | `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
+| `editor/auto-save.lua` | okuuva/auto-save.nvim | 自动保存（noautocmd write 隔离 format_on_save，解决 undo 链断裂；`<leader>ut` 通过 Snacks.toggle 运行时 toggle） |
 | `editor/coverage.lua` | nvim-coverage | 测试覆盖率显示（配合 neotest `-cover` flag；`<leader>tL` 加载 / `<leader>tC` 切换 / `<leader>tM` 摘要） |
 | `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开）。gofumpt/nilness/unusedparams/unusedwrite/useany LazyVim 默认已提供，本文件不重复 |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
@@ -123,6 +124,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `<leader>gvv/gvV/gvH/gvc` | Diffview 工作区对比/文件历史/仓库历史/关闭（避开 LazyVim snacks_picker 的 `<leader>gd`） | editor/diffview.lua |
 | `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
 | `<leader>cp` | Markdown 浏览器预览 | LazyVim lang.markdown extra |
+| `<leader>ut` | 切换全局 autosave（通过 Snacks.toggle，状态在 picker 可见；t = toggle） | editor/auto-save.lua |
 | `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
 | `<leader>fl` | 列出运行中的 snacks 终端，选中 focus | config/keymaps.lua |
@@ -133,11 +135,32 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 
 ### 自动保存
 
-`lua/config/autocmds.lua` 监听 `InsertLeave + TextChanged + FocusLost`，300ms debounce 后写盘（合并连续 normal mode 按键为一次 IO）。写盘走 `pcall(vim.cmd, "update")`，错误通过 `vim.notify` 弹出（不再 `silent!` 吞掉）。
+使用 [`okuuva/auto-save.nvim`](https://github.com/okuuva/auto-save.nvim)（Pocco81/Auto-save 的活跃 fork），配置见 [`lua/plugins/editor/auto-save.lua`](./lua/plugins/editor/auto-save.lua)。
 
-guard 跳过：`buftype != ""` / 只读 / 未修改 / 未命名 / 补全菜单开着（`pumvisible()`）。崩溃恢复依赖 nvim 自身的 swap/undo 持久化。
+**核心设计：autosave × format_on_save 隔离**
 
-LazyVim 默认 `opt.autowrite=true` 另处理「切 buffer 时写」场景，与本 autocmd 互补不冲突（两套独立机制并存）。
+autosave 的 save 走 `noautocmd silent! write`，跳过 `BufWritePre` autocmd。LazyVim 默认在 BufWritePre 跑 conform formatter，如果 autosave 也触发 format，每次小改 + autosave format 会让 undo 树堆积 [edit, format] 配对，按 `u` 撤销原始编辑时需先撤销 format，体验断裂。`noautocmd=true` 后 autosave 只落盘原始内容，用户主动 `:w` 仍走 format。
+
+**触发事件**（debounce 1000ms）
+
+| 类别 | 事件 | 行为 |
+| --- | --- | --- |
+| immediate_save | `BufLeave` / `FocusLost` / `QuitPre` / `VimSuspend` | 立即写 |
+| defer_save | `InsertLeave` / `TextChanged` | debounce 1000ms 后写 |
+| cancel_deferred_save | `InsertEnter` | 取消 pending debounce |
+
+**condition 过滤**：跳过终端/help/qf（`buftype != ""`）、只读、`[No Name]`、补全菜单开着（`pumvisible()`）。`modifiable` 检查插件已内置，无需重复。
+
+**错误可见性**：noautocmd 路径用 `silent! write` 会吞 nvim 内置错误（readonly/swaplock）。监听 `AutoSaveWritePost` User autocmd + 检查 `bo.modified` 反推失败，复刻原手写实现的可见性。
+
+**运行时控制**：
+
+- `:ASToggle` 命令 / `<leader>ut` 快捷键（注册到 Snacks.toggle，在 toggle picker 可见状态） — 全局 toggle autosave
+- `require('auto-save').on()` / `.off()` / `.toggle()` — 编程式控制
+
+**禁用 LazyVim autowrite**：`lua/config/options.lua` 设 `vim.o.autowrite=false`，避免 LazyVim autowrite 在切 buffer 时调原生 `:write` 触发 BufWritePre format（undo 树污染）。auto-save.nvim 的 `immediate_save` 已用 noautocmd write 覆盖 BufLeave / FocusLost / QuitPre / VimSuspend 场景，数据安全冗余不损。
+
+**历史**：原 60 行手写 autosave（per-buffer debounce timer + failure visibility）已迁移，详见 [`lua/config/autocmds.lua`](./lua/config/autocmds.lua) 顶部注释。
 
 ### 终端模式退出
 
@@ -251,7 +274,7 @@ lua/
 │   ├── env.lua         # 启动期 env 注入（luarocks + LG_CONFIG_FILE + GIT_CONFIG_*）
 │   ├── options.lua     # vim.opt 与 LazyVim g 变量（顶部 require env）
 │   ├── keymaps.lua     # 智能终端 ESC + Go 测试切换 + <leader>fl
-│   ├── autocmds.lua    # autosave（debounce + buf_call 上下文安全）
+│   ├── autocmds.lua    # 已迁移 autosave 到 plugins/editor/auto-save.lua，当前为空（LazyVim 约定加载文件，保留 stub）
 │   └── lazy.lua        # lazy.nvim bootstrap + spec import
 ├── plugins/            # lazy.nvim 插件 specs（按目录自动合并）
 │   ├── ai/             # opencode.nvim

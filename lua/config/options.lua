@@ -11,6 +11,12 @@ vim.g.lazyvim_python_lsp = "basedpyright"
 -- 副作用：多个编辑器同改一个文件也会触发静默重载（undo 历史可能被打断）。
 vim.opt.autoread = true
 
+-- 禁用 LazyVim 默认 autowrite=true：LazyVim autowrite 在 :bnext / :make / :!cmd 等场景
+-- 调原生 :write，走 BufWritePre → LazyVim format_on_save（conform）→ undo 树污染
+-- （每次切 buffer + format 会让 undo 树堆积 [edit, format] 配对，按 u 撤销原始编辑时需先撤销 format）
+-- auto-save.nvim (lua/plugins/editor/auto-save.lua) 的 immediate_save 已用 noautocmd write
+-- 覆盖 BufLeave / FocusLost / QuitPre / VimSuspend 场景，数据安全冗余不损。
+vim.o.autowrite = false
 -- 终端标签页显示：项目名/当前文件夹（OSC 0/2，Ghostty/iTerm2/WezTerm 等均支持）
 vim.opt.title = true
 vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}/%{expand('%:h:t')}"
