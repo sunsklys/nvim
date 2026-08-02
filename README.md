@@ -83,7 +83,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `editor/diffview.lua` | diffview.nvim | Git diff/merge 查看 |
 | `editor/quickfix.lua` | nvim-bqf | Quickfix 增强（预览/过滤/标记） |
 | `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
-| `editor/auto-save.lua` | okuuva/auto-save.nvim | 自动保存（noautocmd write 隔离 format_on_save，解决 undo 链断裂；`<leader>ut` 通过 Snacks.toggle 运行时 toggle） |
+| `editor/auto-save.lua` | okuuva/auto-save.nvim | 自动保存（noautocmd write 隔离 format_on_save，解决 undo 链断裂；`<leader>ue` 通过 Snacks.toggle 运行时 toggle） |
 | `editor/coverage.lua` | nvim-coverage | 测试覆盖率显示（配合 neotest `-cover` flag；`<leader>tL` 加载 / `<leader>tC` 切换 / `<leader>tM` 摘要） |
 | `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开）。gofumpt/nilness/unusedparams/unusedwrite/useany LazyVim 默认已提供，本文件不重复 |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
@@ -120,11 +120,11 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
 | `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
 | `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
-| `<leader>gdw` | 切换 gitsigns 行内词级 diff | config/keymaps.lua |
+| `<leader>ghw` | 切换 gitsigns 行内词级 diff（hunks 命名空间，避开 `<leader>gd` 前缀冲突） | config/keymaps.lua |
 | `<leader>gvv/gvV/gvH/gvc` | Diffview 工作区对比/文件历史/仓库历史/关闭（避开 LazyVim snacks_picker 的 `<leader>gd`） | editor/diffview.lua |
 | `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
 | `<leader>cp` | Markdown 浏览器预览 | LazyVim lang.markdown extra |
-| `<leader>ut` | 切换全局 autosave（通过 Snacks.toggle，状态在 picker 可见；t = toggle） | editor/auto-save.lua |
+| `<leader>ue` | 切换全局 autosave（通过 Snacks.toggle，状态在 picker 可见；e 避开 treesitter-context 占用的 ut） | editor/auto-save.lua |
 | `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
 | `<leader>fl` | 列出运行中的 snacks 终端，选中 focus | config/keymaps.lua |
@@ -155,7 +155,7 @@ autosave 的 save 走 `noautocmd silent! write`，跳过 `BufWritePre` autocmd�
 
 **运行时控制**：
 
-- `:ASToggle` 命令 / `<leader>ut` 快捷键（注册到 Snacks.toggle，在 toggle picker 可见状态） — 全局 toggle autosave
+- `:ASToggle` 命令 / `<leader>ue` 快捷键（注册到 Snacks.toggle，在 toggle picker 可见状态） — 全局 toggle autosave
 - `require('auto-save').on()` / `.off()` / `.toggle()` — 编程式控制
 
 **禁用 LazyVim autowrite**：`lua/config/options.lua` 设 `vim.o.autowrite=false`，避免 LazyVim autowrite 在切 buffer 时调原生 `:write` 触发 BufWritePre format（undo 树污染）。auto-save.nvim 的 `immediate_save` 已用 noautocmd write 覆盖 BufLeave / FocusLost / QuitPre / VimSuspend 场景，数据安全冗余不损。
@@ -183,7 +183,7 @@ autosave 的 save 走 `noautocmd silent! write`，跳过 `BufWritePre` autocmd�
 
 | 场景 | 工具 | 快捷键 |
 | --- | --- | --- |
-| 行内词级 diff（当前文件，快速） | gitsigns | `<leader>gdw`（toggle） |
+| 行内词级 diff（当前文件，快速） | gitsigns | `<leader>ghw`（toggle） |
 | 跨文件 / 工作区全对比 | diffview | `<leader>gvv` |
 | commit/staging/全 repo（含 lazygit side-by-side） | lazygit | `<leader>gg` |
 | 文件历史 | diffview | `<leader>gvV`（当前文件）/ `<leader>gvH`（全仓库） |

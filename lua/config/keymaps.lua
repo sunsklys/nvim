@@ -24,7 +24,7 @@ end, { desc = "Go 测试/源文件切换" })
 
 -- gitsigns word_diff toggle（LazyVim 默认未开，与 current_line_blame 互补）
 -- 注意：hunk text object `ih` 已是 LazyVim 默认（editor.lua gitsigns on_attach），无需重配
-vim.keymap.set("n", "<leader>gdw", ":Gitsigns toggle_word_diff<CR>", { desc = "切换行内词级 diff" })
+vim.keymap.set("n", "<leader>ghw", ":Gitsigns toggle_word_diff<CR>", { desc = "切换行内词级 diff" })  -- ghw 属 hunks 命名空间，避开 LazyVim <leader>gd（git_diff leaf）的前缀冲突
 
 -- ─── Smart ESC + 终端快速退出键 ─────────────────────────────────────────────
 -- 背景：snacks.nvim 默认给所有终端 buffer 设「双击 ESC 才退出 insert」

@@ -58,7 +58,7 @@ return {
           name = "Auto Save",
           get = function() return require("auto-save").enabled() end,
           set = function() require("auto-save").toggle() end,
-        }):map("<leader>ut")  -- t = toggle 通用前缀；LazyVim <leader>u* 单字母几乎满，t 未占用
+        }):map("<leader>ue")  -- e 未占用（t 被 treesitter-context extra 占用：LazyVim extras/ui/treesitter-context.lua:17，原注释"t 未占用"是错的）
       end)
     end,
     opts = {
