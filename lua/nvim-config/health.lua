@@ -26,6 +26,7 @@ function M.check()
     { cmd = "node", desc = "Node.js（vtsls/prettier/eslint via Mason）", install = "brew install node" },
     { cmd = "python3", desc = "Python 3（basedpyright/ruff/neotest-python via Mason）", install = "brew install python3" },
     { cmd = "go", desc = "Go（gopls/delve/gofumpt via Mason）", install = "brew install go" },
+    { cmd = "tree-sitter", desc = "tree-sitter CLI（LazyVim 16+ / nvim-treesitter main branch 装新 parser 需要）", install = "brew install tree-sitter-cli" },
   }
   for _, item in ipairs(required_cmds) do
     local found = false
