@@ -1,5 +1,5 @@
 
-vim.keymap.set("n", "<leader>ga", function()
+vim.keymap.set("n", "<leader>cg", function()
   local f = vim.fn.expand("%:p:r")
   local is_test = f:match("_test$") ~= nil
   -- Go 测试命名约定：foo_test.go（external）/ foo_internal_test.go（internal）

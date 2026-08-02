@@ -119,7 +119,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `<C-b>`/`<C-f>` (终端 buffer) | OpenCode 终端内上下翻整页 | ai/opencode.lua |
 | `go{motion}` | 把动作范围发给 OpenCode（operator） | ai/opencode.lua |
 | `goo` | 把整行发给 OpenCode（operator） | ai/opencode.lua |
-| `<leader>ga` | Go 测试/源文件切换 | config/keymaps.lua |
+| `<leader>cg` | Go 测试/源文件切换（code go 命名空间，避开 git group 语义混淆） | config/keymaps.lua |
 | `<leader>ghw` | 切换 gitsigns 行内词级 diff（hunks 命名空间，避开 `<leader>gd` 前缀冲突） | config/keymaps.lua |
 | `<leader>gvv/gvV/gvH/gvc` | Diffview 工作区对比/文件历史/仓库历史/关闭（避开 LazyVim snacks_picker 的 `<leader>gd`） | editor/diffview.lua |
 | `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
@@ -132,6 +132,8 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `<Esc>` (终端) | 普通 shell 单击立即退；nested TUI（opencode/lazygit/fzf/...）双击退 | config/keymaps.lua |
 
 > **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图）。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先用 `<C-;>` 或 `<C-\><C-n>` 回到 normal 再 toggle。
+>
+> **⚠️ 命名空间冲突警告**：`<leader>a*` 与 LazyVim AI extras（avante/claudecode/copilot-chat/sidekick）共用。当前未启用这些 extras 故零冲突；若将来启用需重新规划键位。
 
 ### 自动保存
 

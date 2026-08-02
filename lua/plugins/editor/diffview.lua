@@ -5,7 +5,6 @@
 return {
   {
     "sindrets/diffview.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
     cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose", "DiffviewToggleFiles" },
     keys = {
       -- 进入 diffview（对比当前工作区 vs HEAD）
