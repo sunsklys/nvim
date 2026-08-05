@@ -1,28 +1,19 @@
--- Git diff 查看器：独立 tab 页看 diff/log/merge
--- 替代 Gitsigns 的 hunk diff（更全：整 commit/branch/file history）
---
--- merge 冲突时 :DiffviewOpen 自动显示三方 diff（ours/theirs/base）
+-- Git diff 查看器：独立 tab 看 diff/log/merge 与三方冲突
 return {
   {
     "sindrets/diffview.nvim",
     cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose", "DiffviewToggleFiles" },
     keys = {
-      -- 进入 diffview（对比当前工作区 vs HEAD）
       { "<leader>gvv", "<cmd>DiffviewOpen<cr>", desc = "Diffview 工作区对比" },
-      -- 查看文件历史（git log 当前文件）
       { "<leader>gvV", "<cmd>DiffviewFileHistory %<cr>", desc = "Diffview 文件历史" },
-      -- 查看整个仓库历史
       { "<leader>gvH", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview 仓库历史" },
-      -- 关闭 diffview（回到原 buffer）
       { "<leader>gvc", "<cmd>DiffviewClose<cr>", desc = "Diffview 关闭" },
     },
     opts = {
       view = {
         -- merge 工具布局：三方 diff（左 ours / 中 base /右 theirs）
-        -- 合法值仅 diff3_horizontal/vertical/mixed、diff4_mixed、diff1_plain；曾误写 "diff3" 会触发 err 通知并回退默认
         merge_tool = { layout = "diff3_horizontal" },
       },
-      -- 文件面板默认折叠
       hooks = {
         diff_buf_read = function(bufnr)
           -- diffview 的 buffer 不自动换行（保持代码原样）

@@ -3,7 +3,6 @@
 local M = {}
 
 function M.check()
-  -- ─── Neovim 版本 ──────────────────────────────────────────────
   vim.health.start("nvim-config: Neovim")
   local v = vim.version()
   if v >= vim.version({ 0, 11, 2 }) then
@@ -15,7 +14,6 @@ function M.check()
     )
   end
 
-  -- ─── 外部命令依赖 ─────────────────────────────────────────────
   vim.health.start("nvim-config: 外部命令")
   local required_cmds = {
     { cmd = "lazygit", desc = "Git TUI", install = "brew install lazygit" },
@@ -47,7 +45,6 @@ function M.check()
     end
   end
 
-  -- ─── Lua rocks（snacks.image 全格式渲染） ────────────────────
   vim.health.start("nvim-config: Lua rocks")
   local ok_magick = pcall(require, "magick")
   if ok_magick then
@@ -59,7 +56,6 @@ function M.check()
     )
   end
 
-  -- ─── 环境变量 ────────────────────────────────────────────────
   vim.health.start("nvim-config: 环境变量")
   local lg = vim.env.LG_CONFIG_FILE or ""
   if lg:match("lazygit%.yml") then
@@ -76,7 +72,6 @@ function M.check()
     vim.health.warn("GIT_CONFIG_COUNT 未设置", "检查 lua/config/env.lua 是否正常加载")
   end
 
-  -- ─── ripgrep / fd 用户级忽略配置（dotfiles 外部依赖） ────────
   vim.health.start("nvim-config: 用户级搜索工具配置")
   local rg_config = vim.fn.expand("~/.config/ripgrep/config")
   if vim.fn.filereadable(rg_config) == 1 then

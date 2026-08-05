@@ -6,9 +6,9 @@ return {
         gopls = {
           settings = {
             gopls = {
-              -- 本仓库 additive 于 LazyVim 默认：shadow 是 LazyVim 不开的唯一增量（unusedwrite/nilness/useany/gofumpt 均为 LazyVim 默认）
+              -- 增量于 LazyVim 默认：shadow 是唯一额外开启的 analysis
               analyses = {
-                shadow = true, -- 检测变量遮蔽（range/len/type 等）
+                shadow = true,
               },
             },
           },

@@ -1,7 +1,5 @@
--- 在 LazyVim 默认 lualine 配置基础上追加 OpenCode 状态显示
--- statusline 返回 "图标 + server URL"（󰚩 idle / 󱜙 busy / 󱚡 error / 󱚧 未连接）
--- 由 opencode.lua config 内的 autocmd 监听 OpencodeEvent:session.status 触发 redrawstatus
--- 用 function + cond 包裹：opencode 是 lazy-loaded，未加载时不显示该组件
+-- 在 LazyVim 默认 lualine 基础上追加 OpenCode 状态显示
+-- 用 cond 包裹懒加载，opencode 未加载时不显示
 return {
   {
     "nvim-lualine/lualine.nvim",
@@ -11,7 +9,6 @@ return {
       table.insert(opts.sections.lualine_z, {
         function()
           local s = require("opencode").statusline()
-          -- 去掉 server URL（非用户可操作信息），只保留图标 + 状态
           s = s:gsub("https?://%S+", "")
           return (s:gsub("^%s+", ""):gsub("%s+$", ""))
         end,

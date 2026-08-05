@@ -1,10 +1,6 @@
--- snacks.nvim 配置集中管理
--- 之前散在 lua/plugins/ui/explorer.lua（picker.sources.explorer）和
--- lua/plugins/ai/opencode.lua（input + picker.actions.opencode_send），
--- 合并到本文件提高可发现性。lazy.nvim 会自动合并各处 opts，行为零变化。
+-- snacks.nvim 配置
 
--- module-local 常量：避免每次 picker action 触发都重建 patterns table。
--- 命中即拦截（无歧义路径/扩展名）
+-- module-local 常量，避免每次重建 patterns table
 local SECRET_PATTERNS = {
   "%.env[%w.]*$", -- .env / .env.local / .envrc
   "^id_[%w]+$", -- SSH 私钥（无扩展名：id_rsa/ed25519/ecdsa/dsa）
@@ -29,8 +25,7 @@ local SECRET_PATTERNS = {
   "%.docker[/\\]config", -- docker registry auth token
 }
 
--- 双层守卫：secret/credential 关键字 + 凭证类扩展名同时命中
--- （避免误伤 secret.go 等源码）
+-- 双层守卫：secret/credential 关键字 + 凭证类扩展名同时命中，避免误伤源码
 local CREDENTIAL_EXTS = {
   "%.json$",
   "%.ya?ml$",
@@ -68,24 +63,19 @@ return {
         enabled = true,
         sources = {
           explorer = {
-            hidden = true, -- 显示隐藏文件（dotfiles）
-            ignored = true, -- 显示 .gitignore 忽略的文件
-            -- 列宽按屏宽百分比（0.15 = 15%）。snacks explorer 默认走 sidebar preset：固定 40 列。
-            -- 双层 layout：外层 picker layout config（含 preset/preview）deep-merge 进默认 sidebar preset，
-            -- 故 preview="main"/position="left"/backdrop=false 等全部保留，不破坏现有布局；内层才是 layout box。
-            -- min_width 给窄屏兜底，避免 15% 在小屏不足 30 列时被默认 min_width=40 反向拉宽。
+            hidden = true,
+            ignored = true,
+            -- 列宽按屏宽 15%，min_width 30 给窄屏兜底
             layout = { layout = { width = 0.16, min_width = 30 } },
           },
         },
         actions = {
           ---@param picker snacks.Picker
-          -- 在任意 snacks picker（find_files/grep/explorer 等）中按 <a-a>，
-          -- 把选中项（文件/文本）作为 prompt 发送给 opencode
+          -- 在 snacks picker 中按 <a-a> 发送选中项到 OpenCode
           opencode_send = function(picker)
             ---@type snacks.picker.Item[]
             local selected = picker:selected({ fallback = true })
-            -- 安全护栏：疑似密钥/凭证文件不发给 AI provider（避免 .env/*.pem/id_rsa 一键泄漏）
-            -- 过滤逻辑见 module-local 的 is_secret() 函数（避免每次重建 patterns table）
+            -- 安全护栏：密钥/凭证文件不发给 AI provider
             local items = vim.tbl_filter(
               function(i)
                 return i ~= nil
@@ -96,9 +86,7 @@ return {
                   vim.notify("跳过疑似密钥/凭证文件: " .. content, vim.log.levels.WARN)
                   return nil
                 end
-                -- snacks picker pos[2]/end_pos[2] 是 0-based col，opencode.format 期望 1-based：+1 转换
-                -- 显式 fallback 替代 a and b or c：format 返回 nil 时落入 item.file（路径字符串），避免 item.text 空字符串
-                -- pos[2]/end_pos[2] 可能为 nil（某些 source 只设 line），用 truthy 检查避免 nil+1 报错
+                -- pos[2] 是 0-based col，opencode.format 期望 1-based：+1 转换
                 local function shift(pos) return pos and { pos[1], pos[2] and pos[2] + 1 or nil } or nil end
                 local from = shift(item.pos)
                 local to = shift(item.end_pos)

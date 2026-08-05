@@ -1,13 +1,7 @@
--- 测试覆盖率显示(配合 neotest -cover flag)
--- 支持 Go (coverprofile) / Python (coverage.py) / JS (lcov) 等格式
--- 工作流:跑测试(<leader>tr)生成 coverage.out → <leader>tL 加载 → <leader>tC 切换显示
--- signcolumn 高亮:未覆盖行红色,覆盖行绿色(可定制)
--- <leader>tL 加载 / <leader>tC 切换显示 / <leader>tM 摘要窗
--- （tL/tC/tM 避开 LazyVim test.core 已占键位：小写 tt/ta/tr/tl/ts/to/tw/td，大写 tT/tO/tS）
+-- 测试覆盖率(配合 neotest -cover flag), <leader>tL/tC/tM
 return {
   {
     "andythigpen/nvim-coverage",
-    -- 不设 version/branch：让 lazy-lock.json 锁定的 commit 接管（项目长期 0.x，未来 minor 可能 breaking）。升级走 :Lazy sync 主动 review。
     dependencies = { "nvim-lua/plenary.nvim" },
     cmd = { "Coverage", "CoverageLoad", "CoverageShow", "CoverageHide", "CoverageToggle", "CoverageSummary" },
     opts = { auto_reload = true },

@@ -1,9 +1,0 @@
--- autocmds.lua: LazyVim 约定 lazy.nvim 自动加载此文件。
---
--- 历史：原 60 行手写 autosave（per-buffer debounce timer + failure visibility）
--- 已迁移到 lua/plugins/editor/auto-save.lua（okuuva/auto-save.nvim），换插件原因：
---   1. fork 提供 noautocmd=true 选项，save 时跳过 BufWritePre，彻底隔离 autosave 与
---      LazyVim format_on_save（conform），解决 undo 树污染。
---   2. 内置 :ASToggle 命令支持运行时 toggle。
---
--- 此文件目前无自定义 autocmd。新加 autocmd 时直接写在下面即可。

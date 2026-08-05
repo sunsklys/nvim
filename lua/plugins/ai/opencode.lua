@@ -1,12 +1,4 @@
--- nickjvandyke/opencode.nvim - 社区维护的 OpenCode neovim 集成（被官方 ecosystem 收录）
--- 替代手写 Snacks.terminal 方案，提供：
--- - 自动 reload edit 后的 buffer
--- - 编辑权限请求时弹 diff 视图（da 接受 / dr 拒绝 / dp/do 单 hunk）
--- - 上下文占位符 @this/@buffer/@diagnostics/@quickfix/@marks
--- - 内置 prompts (explain/fix/review/optimize/test/document/implement/diagnostics)
--- - SSE 事件流 (OpencodeEvent:*)
---
--- PTY 字节直发逻辑见 lua/util/opencode.lua（与 spec 解耦）
+-- nickjvandyke/opencode.nvim - OpenCode neovim 集成，PTY 直发见 lua/util/opencode.lua
 
 local oc = require("util.opencode")
 
@@ -15,7 +7,6 @@ local terminal_opts = { win = { position = "right", width = 0.3, enter = true } 
 local server_opts = { win = { position = "right", width = 0.3, enter = false } }
 local nx = { "n", "x" }
 
--- keymap helpers：消除 prompt/command 类 key 的重复样板
 local function prompt(lhs, text, desc)
   return { lhs, function() require("opencode").prompt(text) end, mode = nx, desc = desc }
 end
@@ -26,7 +17,7 @@ end
 return {
   {
     "nickjvandyke/opencode.nvim",
-    -- 不设 version/branch：让 lazy-lock.json 锁定的 commit 接管，避免 pre-1.0 项目发出新 tag 后被自动拉到 breaking 版本。升级走 :Lazy sync 主动 review。
+    -- 不设 version：lazy-lock.json 锁定 commit，防 pre-1.0 tag breaking 升级
     dependencies = { "folke/snacks.nvim" },
     config = function()
       ---@type opencode.Opts
@@ -58,7 +49,7 @@ return {
         group = scroll_grp,
         callback = function(args)
           if vim.bo[args.buf].buftype ~= "terminal" then return end
-          if vim.b[args.buf].oc_scroll then return end -- 已绑定，跳过
+          if vim.b[args.buf].oc_scroll then return end
           local name = vim.api.nvim_buf_get_name(args.buf)
           if not name:match("opencode") then return end
           vim.b[args.buf].oc_scroll = true
@@ -76,12 +67,10 @@ return {
       { "<leader>a", group = "OpenCode" },
       -- OpenCode 键位命名空间：<leader>a*（从 <leader>o* 迁移，释放 overseer 命名空间）
 
-      -- 终端 + 核心交互
       { "<leader>at", function() require("snacks.terminal").toggle(opencode_cmd, terminal_opts) end, mode = "n", desc = "切换 OpenCode" },
       { "<leader>aa", function() require("opencode").ask("@this: ") end, mode = nx, desc = "询问 OpenCode (输入框)" },
       { "<leader>am", function() require("opencode").command("agent.cycle") end, desc = "切换 AI 模型" },
 
-      -- Prompts 子组 <leader>ap*（原 <leader>oe/or/of/ot/oz/od/oE/oI）
       prompt("<leader>ape", "Explain @this and its context", "解释当前代码"),
       prompt("<leader>apr", "Review @this for correctness and readability", "审查当前代码"),
       prompt("<leader>apf", "Fix @diagnostics", "修复诊断"),
@@ -91,7 +80,6 @@ return {
       prompt("<leader>apE", "Explain @diagnostics", "解释诊断信息"),
       prompt("<leader>apI", "Implement @this", "实现当前代码"),
 
-      -- Session 子组 <leader>as*（原 <leader>on/oS/ou/oR/oc/oi/oL/oP）
       cmd("<leader>asn", "session.new", "新建会话"),
       { "<leader>asS", function() require("opencode").select() end, mode = nx, desc = "选择会话/命令/prompt" },
       cmd("<leader>asu", "session.undo", "撤销上一步"),
@@ -113,7 +101,6 @@ return {
       oc.tscroll("<leader>avg", "first", "跳到顶部"),
       oc.tscroll("<leader>avG", "last", "跳到底部"),
 
-      -- Operator + dot-repeat（不随命名空间迁移）
       { "go", function() return require("opencode").operator("@this ") end, mode = nx, expr = true, desc = "把范围发给 OpenCode" },
       {
         "goo",
