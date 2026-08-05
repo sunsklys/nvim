@@ -1,112 +1,69 @@
--- Markdown 预览与 buffer 内渲染
---
--- 配置原则：只覆盖 LazyVim markdown extra / render-markdown 插件默认没有的字段。
--- 其余（pipe_table.cell、code.sign、heading.width 等）全部依赖默认值，避免冗余。
---
--- 有效覆盖项（4 项）：
---   1. pipe_table.preset = "round"      表格圆角边框（默认 none）
---   2. code.border = "thin"             代码块细边框（默认 hide）
---   3. anti_conceal.above/below = 1     光标上下 1 行不 conceal（避免编辑闪烁）
---   4. win_options.conceallevel = 2     比默认 3 更柔和（保留 cchar 显示）
---
--- wrap 行为：依赖 LazyVim markdown extra 默认（wrap=true + linebreak=true）。
--- 长表格超出窗口时按 <leader>uw 切 nowrap，再用 zL/zH 水平滚动。
+-- Markdown 预览:markdown-preview.nvim(浏览器)+ render-markdown.nvim(buffer 内)
 
--- prettier 项目配置检测 —— 用于下方 conform.nvim spec 的 prepend_args 分流决策。
--- 复用 LazyVim has_config 的同一方法（LazyVim/.../extras/formatting/prettier.lua:33-35）：
--- 调 `prettier --find-config-path <filename>`，让 prettier 自己向上查找它支持的全部配置形式
--- （.prettierrc.* / prettier.config.* / package.json "prettier" 字段 / .editorconfig 等）。
--- 比手列文件名更准确（100% 覆盖）且零维护（自动跟随 prettier 演进）。
---
--- 比 LazyVim has_config 多一层防御：
---   - LazyVim has_config 在 prettier 不可执行时会让 vim.fn.system 抛出 Lua 错误
---     (E475: 'prettier' is not executable)。LazyVim 默认不调 has_config 所以未暴露；
---     我们每次 markdown format 都调用，必须显式检查 executable + pcall 双保险。
---   - 出现以下场景会触发：Mason 未加载完 / Mason PATH=skip / prettier 包未安装 /
---     headless nvim 早期阶段。
---
--- 不缓存结果：每次调用都调 `prettier --find-config-path` 查最新状态（30-80ms，
--- format 本身已几百 ms，占比可忽略）。收益：项目新增/删除 .prettierrc 后立生效，
--- 不需重启 nvim。DirChanged / fs watcher 方案都解决不了外部 shell 新增配置的场景。
+-- 项目级 prettier 配置检测:executable + pcall 双保险(Mason 未加载完时 prettier 不可执行)
 local function has_project_prettier_config(filename)
-  -- prettier 不可执行时直接返回 false —— Mason 可能还在 lazy-load，
-  -- 下次 format 时重试（无缓存白纸状态，避免锁死）
-  if vim.fn.executable("prettier") == 0 then
-    return false
-  end
-  -- pcall 保护：vim.fn.system 在 prettier 不可执行时抛 Lua 错误（E475）
-  -- executable 检查已防主因，pcall 兜底捕获其他意外错误
+  if vim.fn.executable("prettier") == 0 then return false end
   local ok = pcall(vim.fn.system, { "prettier", "--find-config-path", filename })
-  if not ok then
-    return false
-  end
-  return vim.v.shell_error == 0
+  return ok and vim.v.shell_error == 0
 end
 
 return {
-  -- render-markdown.nvim：buffer 内渲染
+  -- render-markdown.nvim:覆盖默认 4 项(圆角表格/细代码边框/光标上下文不 conceal/柔和 conceallevel)
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    -- 仅移除 codecompanion ft（未启用该 extra）；保留 LazyVim 默认的 markdown/norg/rmd/org
     ft = { "markdown", "norg", "rmd", "org" },
     opts = function(_, opts)
-      -- 表格圆角边框（LazyVim/插件默认 preset="none" 无圆角）
-      opts.pipe_table = vim.tbl_deep_extend("force", opts.pipe_table or {}, {
-        preset = "round",
-      })
-
-      -- 代码块细边框（LazyVim/插件默认 border="hide" 无边框）
-      opts.code = vim.tbl_deep_extend("force", opts.code or {}, {
-        border = "thin",
-      })
-
-      -- anti_conceal 光标上下文（默认 above=below=0，编辑表格时边框会闪烁）
-      opts.anti_conceal = vim.tbl_deep_extend("force", opts.anti_conceal or {}, {
-        above = 1,
-        below = 1,
-      })
-
-      -- conceallevel=2（默认=3 更激进，=2 保留 cchar 显示更柔和）
+      opts.pipe_table = vim.tbl_deep_extend("force", opts.pipe_table or {}, { preset = "round" })
+      opts.code = vim.tbl_deep_extend("force", opts.code or {}, { border = "thin" })
+      opts.anti_conceal = vim.tbl_deep_extend("force", opts.anti_conceal or {}, { above = 1, below = 1 })
       opts.win_options = vim.tbl_deep_extend("force", opts.win_options or {}, {
         conceallevel = { default = vim.o.conceallevel, rendered = 2 },
       })
-
       return opts
     end,
   },
 
-  -- markdown-preview.nvim：LazyVim lang.markdown extra 已含 cmd/build/keys/config，
-  -- 这里只覆盖本仓库偏好的 g 变量（端口固定 + 关 buffer 不关浏览器）
+  -- markdown-preview.nvim:覆盖 build 加 routes.js patch
+  -- (修 client JS startSocket 把 URL /page/N 改成 /N 后浏览器刷新 404 的上游 bug)
+  -- patch 用 302 redirect /N → /page/N,不能用直接返回 index.html:
+  -- client JS componentDidMount 解析 pathname.split('/')[2] 只认 /page/N 格式,
+  -- 直接给 /N 返回 index.html 会让 parseFloat(undefined)=NaN,bufnr 变 NaN → URL 变 /NaN。
   {
     "iamcco/markdown-preview.nvim",
     init = function()
-      -- auto_close=0：关闭 buffer 时不自动关闭浏览器预览（默认 1 会关）
-      vim.g.mkdp_auto_close = 0
-      -- 固定端口（默认 8080+随机后3位，重启 nvim 后旧 URL 会 404）
-      vim.g.mkdp_port = "8765"
+      vim.g.mkdp_auto_close = 0  -- 关 buffer 不关浏览器
+      vim.g.mkdp_port = "8765"   -- 固定端口(默认随机,重启后旧 URL 失效)
+    end,
+    build = function(plugin)
+      require("lazy").load({ plugins = { "markdown-preview.nvim" } })
+      vim.fn["mkdp#util#install"]()
+      -- patch routes.js:/^\d+$/ 路由 302 redirect 到 /page/N
+      local patched = content:gsub(
+        "// /page/:number",
+        "// patched_short_url: /N redirect 到 /page/N(client JS 解析依赖 /page/N 路径)\n"
+          .. "use((req, res, next) => {\n"
+          .. "  if (/^\\/\\d+$/.test(req.asPath)) {\n"
+          .. "    res.statusCode = 302\n"
+          .. "    res.setHeader('Location', '/page/' + req.asPath.slice(1))\n"
+          .. "    return res.end()\n"
+          .. "  }\n"
+          .. "  next()\n"
+          .. "})\n\n"
+          .. "// /page/:number",
+        1
+      )
+      if patched ~= content then
+        local f2 = io.open(routes_path, "w")
+        if f2 then
+          f2:write(patched)
+          f2:close()
+        end
+      end
     end,
   },
 
-  -- conform.nvim：markdown 专属 prettier 调优
-  -- LazyVim formatting.prettier extra 已把 markdown / markdown.mdx 加到 prettier 的 formatters_by_ft，
-  -- 默认 print-width=80、prose-wrap="preserve"（prettier 自身默认）。这里覆盖两点：
-  --   1. prose-wrap="preserve"（显式）—— 防止 prettier 自动重排中文段落。prettier 对 CJK 字符的
-  --      display-width 判断不精准（多数按 1 列计，实际占 2 列），prose-wrap="always" 会把中文段落
-  --      拆得支离破碎。"preserve" 保留作者手动换行，prettier 只动表格/列表/标题等结构元素。
-  --   2. print-width=120 —— 影响范围比直觉窄（prose-wrap=preserve 已禁用 prose reflow）：
-  --      实际只对 (a) 内嵌代码块 ```ts 等的格式化列宽、(b) 80-120 列宽度的窄表格是否需要换行
-  --      切片，有可见效果；对纯文本段落无影响。现代终端更宽，给内嵌代码留更宽松的列宽。
-  -- 显式写出 "preserve" 是为了 flip 回 always 时知道改哪一行。
-  --
-  -- 实现细节：
-  --   - prepend_args 是 function(self, ctx)，按 ctx.buf 的 filetype 分流 —— 仅 markdown 系列加参数，
-  --     其他 ft（ts/js/json/yaml 等）继续走 prettier 默认。
-  --   - 项目本地有 prettier 配置则让项目配置赢（默认 prettier CLI 会覆盖 config file，这里反向让步）。
-  --     检测由文件顶部的 has_project_prettier_config() 完成 —— 调 prettier --find-config-path，
-  --     覆盖 prettier 支持的全部形式（.prettierrc.* / prettier.config.* / package.json "prettier"
-  --     字段 / .editorconfig），同 LazyVim has_config 的方法，但多了 executable + pcall 双保险
-  --   - vim.tbl_deep_extend("force", ...) 合并：保留 LazyVim 设置的 condition（has_parser 检测），仅追加字段。
-  --   - 表格对齐：prettier 默认就格式化 GFM 表格的列宽与 padding，无需额外参数。
+  -- conform.nvim:markdown 专属 prettier
+  -- (prose-wrap=preserve 防 CJK 段落被拆碎,print-width=120 给内嵌代码更宽列宽)
   {
     "stevearc/conform.nvim",
     optional = true,
@@ -115,13 +72,8 @@ return {
       opts.formatters.prettier = vim.tbl_deep_extend("force", opts.formatters.prettier or {}, {
         prepend_args = function(_, ctx)
           local ft = vim.bo[ctx.buf].filetype
-          if ft ~= "markdown" and ft ~= "markdown.mdx" then
-            return {}
-          end
-          -- 项目本地有 prettier 配置则让项目配置赢（默认 prettier CLI 会覆盖 config file）
-          if has_project_prettier_config(ctx.filename) then
-            return {}
-          end
+          if ft ~= "markdown" and ft ~= "markdown.mdx" then return {} end
+          if has_project_prettier_config(ctx.filename) then return {} end  -- 项目配置优先
           return { "--print-width", "120", "--prose-wrap", "preserve" }
         end,
       })
