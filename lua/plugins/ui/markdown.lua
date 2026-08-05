@@ -32,8 +32,28 @@ return {
     "iamcco/markdown-preview.nvim",
     init = function()
       vim.g.mkdp_auto_close = 0  -- 关 buffer 不关浏览器
-      vim.g.mkdp_port = "8765"   -- 固定端口(默认随机,重启后旧 URL 失效)
+      vim.g.mkdp_echo_preview_url = 1  -- 启动时 echo URL 到 :messages
     end,
+    -- 覆盖 LazyVim <leader>cp:启动 preview 前动态选可用端口
+    -- init 时检测有 race(其他 nvim 可能抢端口),移到 keymap 触发时(server 启动前)检测
+    -- 用 nc 检测(62ms)比 lsof(168ms)快 2.7 倍且准确(libuv bind 因 SO_REUSEADDR 不适用)
+    keys = {
+      {
+        "<leader>cp",
+        function()
+          local port = 8765
+          while port < 8770 do
+            vim.fn.system("nc -z -w1 127.0.0.1 " .. port)
+            if vim.v.shell_error ~= 0 then break end -- 连不上 = 端口可用
+            port = port + 1
+          end
+          vim.g.mkdp_port = tostring(port)
+          vim.cmd("MarkdownPreviewToggle")
+        end,
+        ft = "markdown",
+        desc = "Markdown Preview",
+      },
+    },
     build = function(plugin)
       require("lazy").load({ plugins = { "markdown-preview.nvim" } })
       vim.fn["mkdp#util#install"]()
