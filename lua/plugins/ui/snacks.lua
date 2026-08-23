@@ -87,7 +87,9 @@ return {
                   return nil
                 end
                 -- pos[2] 是 0-based col，opencode.format 期望 1-based：+1 转换
-                local function shift(pos) return pos and { pos[1], pos[2] and pos[2] + 1 or nil } or nil end
+                local function shift(pos)
+                  return pos and { pos[1], pos[2] and pos[2] + 1 or nil } or nil
+                end
                 local from = shift(item.pos)
                 local to = shift(item.end_pos)
                 return require("opencode").format({ path = item.file, from = from, to = to }) or item.file

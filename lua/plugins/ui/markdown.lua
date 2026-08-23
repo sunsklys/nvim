@@ -2,7 +2,9 @@
 
 -- 项目级 prettier 配置检测:executable + pcall 双保险(Mason 未加载完时 prettier 不可执行)
 local function has_project_prettier_config(filename)
-  if vim.fn.executable("prettier") == 0 then return false end
+  if vim.fn.executable("prettier") == 0 then
+    return false
+  end
   local ok = pcall(vim.fn.system, { "prettier", "--find-config-path", filename })
   return ok and vim.v.shell_error == 0
 end
@@ -31,8 +33,8 @@ return {
   {
     "iamcco/markdown-preview.nvim",
     init = function()
-      vim.g.mkdp_auto_close = 0  -- 关 buffer 不关浏览器
-      vim.g.mkdp_echo_preview_url = 1  -- 启动时 echo URL 到 :messages
+      vim.g.mkdp_auto_close = 0 -- 关 buffer 不关浏览器
+      vim.g.mkdp_echo_preview_url = 1 -- 启动时 echo URL 到 :messages
     end,
     -- 覆盖 LazyVim <leader>cp:启动 preview 前动态选可用端口
     -- init 时检测有 race(其他 nvim 可能抢端口),移到 keymap 触发时(server 启动前)检测
@@ -45,11 +47,16 @@ return {
           local port = 8765
           while port < 8770 do
             vim.fn.system("nc -z -w1 127.0.0.1 " .. port)
-            if vim.v.shell_error ~= 0 then break end -- 连不上 = 端口可用
+            if vim.v.shell_error ~= 0 then
+              break
+            end -- 连不上 = 端口可用
             port = port + 1
           end
           if port == 8770 then
-            vim.notify("端口 8765-8769 均被占用，使用 8770（若启动失败请关闭旧实例）", vim.log.levels.WARN)
+            vim.notify(
+              "端口 8765-8769 均被占用，使用 8770（若启动失败请关闭旧实例）",
+              vim.log.levels.WARN
+            )
           end
           vim.g.mkdp_port = tostring(port)
           vim.cmd("MarkdownPreviewToggle")
@@ -64,7 +71,9 @@ return {
       -- patch routes.js:/^\d+$/ 路由 302 redirect 到 /page/N
       local routes_path = plugin.dir .. "/app/routes.js"
       local f = io.open(routes_path)
-      if not f then return end
+      if not f then
+        return
+      end
       local content = f:read("*a")
       f:close()
       local patched = content:gsub(
@@ -101,8 +110,12 @@ return {
       opts.formatters.prettier = vim.tbl_deep_extend("force", opts.formatters.prettier or {}, {
         prepend_args = function(_, ctx)
           local ft = vim.bo[ctx.buf].filetype
-          if ft ~= "markdown" and ft ~= "markdown.mdx" then return {} end
-          if has_project_prettier_config(ctx.filename) then return {} end  -- 项目配置优先
+          if ft ~= "markdown" and ft ~= "markdown.mdx" then
+            return {}
+          end
+          if has_project_prettier_config(ctx.filename) then
+            return {}
+          end -- 项目配置优先
           return { "--print-width", "120", "--prose-wrap", "preserve" }
         end,
       })

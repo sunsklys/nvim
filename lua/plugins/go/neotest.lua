@@ -18,12 +18,48 @@ return {
     },
     -- 覆盖 LazyVim 默认测试键，加 pre-run wall
     keys = {
-      { "<leader>tt", with_save(function() require("neotest").run.run(vim.fn.expand("%")) end), desc = "Run File (Neotest, with save)" },
-      { "<leader>tT", with_save(function() require("neotest").run.run(vim.uv.cwd()) end), desc = "Run All Test Files (with save)" },
-      { "<leader>tr", with_save(function() require("neotest").run.run() end), desc = "Run Nearest (with save)" },
-      { "<leader>tl", with_save(function() require("neotest").run.run_last() end), desc = "Run Last (with save)" },
-      { "<leader>td", with_save(function() require("neotest").run.run({ strategy = "dap" }) end), desc = "Debug Nearest (with save)" },
-      { "<leader>tw", with_save(function() require("neotest").watch.toggle(vim.fn.expand("%")) end), desc = "Toggle Watch (with save)" },
+      {
+        "<leader>tt",
+        with_save(function()
+          require("neotest").run.run(vim.fn.expand("%"))
+        end),
+        desc = "Run File (Neotest, with save)",
+      },
+      {
+        "<leader>tT",
+        with_save(function()
+          require("neotest").run.run(vim.uv.cwd())
+        end),
+        desc = "Run All Test Files (with save)",
+      },
+      {
+        "<leader>tr",
+        with_save(function()
+          require("neotest").run.run()
+        end),
+        desc = "Run Nearest (with save)",
+      },
+      {
+        "<leader>tl",
+        with_save(function()
+          require("neotest").run.run_last()
+        end),
+        desc = "Run Last (with save)",
+      },
+      {
+        "<leader>td",
+        with_save(function()
+          require("neotest").run.run({ strategy = "dap" })
+        end),
+        desc = "Debug Nearest (with save)",
+      },
+      {
+        "<leader>tw",
+        with_save(function()
+          require("neotest").watch.toggle(vim.fn.expand("%"))
+        end),
+        desc = "Toggle Watch (with save)",
+      },
     },
   },
 }

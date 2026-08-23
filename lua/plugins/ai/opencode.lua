@@ -8,10 +8,23 @@ local server_opts = { win = { position = "right", width = 0.3, enter = false } }
 local nx = { "n", "x" }
 
 local function prompt(lhs, text, desc)
-  return { lhs, function() require("opencode").prompt(text) end, mode = nx, desc = desc }
+  return {
+    lhs,
+    function()
+      require("opencode").prompt(text)
+    end,
+    mode = nx,
+    desc = desc,
+  }
 end
 local function cmd(lhs, command, desc)
-  return { lhs, function() require("opencode").command(command) end, desc = desc }
+  return {
+    lhs,
+    function()
+      require("opencode").command(command)
+    end,
+    desc = desc,
+  }
 end
 
 return {
@@ -38,7 +51,9 @@ return {
           local now = vim.uv.hrtime() / 1e6
           if now - last_redraw > 200 then
             last_redraw = now
-            vim.defer_fn(function() vim.cmd("redrawstatus") end, 0)
+            vim.defer_fn(function()
+              vim.cmd("redrawstatus")
+            end, 0)
           end
         end,
       })
@@ -48,18 +63,36 @@ return {
       vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter" }, {
         group = scroll_grp,
         callback = function(args)
-          if vim.bo[args.buf].buftype ~= "terminal" then return end
-          if vim.b[args.buf].oc_scroll then return end
+          if vim.bo[args.buf].buftype ~= "terminal" then
+            return
+          end
+          if vim.b[args.buf].oc_scroll then
+            return
+          end
           local name = vim.api.nvim_buf_get_name(args.buf)
-          if not name:match("opencode") then return end
+          if not name:match("opencode") then
+            return
+          end
           vim.b[args.buf].oc_scroll = true
           local o = { buffer = args.buf, silent = true, nowait = true }
-          vim.keymap.set("n", "K", function() oc.tsnd_warn(oc.keys.line_up) end, o)
-          vim.keymap.set("n", "J", function() oc.tsnd_warn(oc.keys.line_down) end, o)
-          vim.keymap.set("n", "<C-u>", function() oc.tsnd_warn(oc.keys.half_up) end, o)
-          vim.keymap.set("n", "<C-d>", function() oc.tsnd_warn(oc.keys.half_down) end, o)
-          vim.keymap.set("n", "<C-b>", function() oc.tsnd_warn(oc.keys.page_up) end, o)
-          vim.keymap.set("n", "<C-f>", function() oc.tsnd_warn(oc.keys.page_down) end, o)
+          vim.keymap.set("n", "K", function()
+            oc.tsnd_warn(oc.keys.line_up)
+          end, o)
+          vim.keymap.set("n", "J", function()
+            oc.tsnd_warn(oc.keys.line_down)
+          end, o)
+          vim.keymap.set("n", "<C-u>", function()
+            oc.tsnd_warn(oc.keys.half_up)
+          end, o)
+          vim.keymap.set("n", "<C-d>", function()
+            oc.tsnd_warn(oc.keys.half_down)
+          end, o)
+          vim.keymap.set("n", "<C-b>", function()
+            oc.tsnd_warn(oc.keys.page_up)
+          end, o)
+          vim.keymap.set("n", "<C-f>", function()
+            oc.tsnd_warn(oc.keys.page_down)
+          end, o)
         end,
       })
     end,
@@ -67,9 +100,29 @@ return {
       { "<leader>a", group = "OpenCode" },
       -- OpenCode 键位命名空间：<leader>a*（从 <leader>o* 迁移，释放 overseer 命名空间）
 
-      { "<leader>at", function() require("snacks.terminal").toggle(opencode_cmd, terminal_opts) end, mode = "n", desc = "切换 OpenCode" },
-      { "<leader>aa", function() require("opencode").ask("@this: ") end, mode = nx, desc = "询问 OpenCode (输入框)" },
-      { "<leader>am", function() require("opencode").command("agent.cycle") end, desc = "切换 AI 模型" },
+      {
+        "<leader>at",
+        function()
+          require("snacks.terminal").toggle(opencode_cmd, terminal_opts)
+        end,
+        mode = "n",
+        desc = "切换 OpenCode",
+      },
+      {
+        "<leader>aa",
+        function()
+          require("opencode").ask("@this: ")
+        end,
+        mode = nx,
+        desc = "询问 OpenCode (输入框)",
+      },
+      {
+        "<leader>am",
+        function()
+          require("opencode").command("agent.cycle")
+        end,
+        desc = "切换 AI 模型",
+      },
 
       prompt("<leader>ape", "Explain @this and its context", "解释当前代码"),
       prompt("<leader>apr", "Review @this for correctness and readability", "审查当前代码"),
@@ -81,7 +134,14 @@ return {
       prompt("<leader>apI", "Implement @this", "实现当前代码"),
 
       cmd("<leader>asn", "session.new", "新建会话"),
-      { "<leader>asS", function() require("opencode").select() end, mode = nx, desc = "选择会话/命令/prompt" },
+      {
+        "<leader>asS",
+        function()
+          require("opencode").select()
+        end,
+        mode = nx,
+        desc = "选择会话/命令/prompt",
+      },
       cmd("<leader>asu", "session.undo", "撤销上一步"),
       cmd("<leader>asR", "session.redo", "重做"),
       cmd("<leader>asc", "session.compact", "压缩当前会话"),
@@ -101,7 +161,15 @@ return {
       oc.tscroll("<leader>avg", "first", "跳到顶部"),
       oc.tscroll("<leader>avG", "last", "跳到底部"),
 
-      { "go", function() return require("opencode").operator("@this ") end, mode = nx, expr = true, desc = "把范围发给 OpenCode" },
+      {
+        "go",
+        function()
+          return require("opencode").operator("@this ")
+        end,
+        mode = nx,
+        expr = true,
+        desc = "把范围发给 OpenCode",
+      },
       {
         "goo",
         function()

@@ -1,4 +1,3 @@
-
 vim.keymap.set("n", "<leader>cg", function()
   local f = vim.fn.expand("%:p:r")
   local is_test = f:match("_test$") ~= nil
@@ -21,13 +20,26 @@ vim.keymap.set("n", "<leader>cg", function()
 end, { desc = "Go 测试/源文件切换" })
 
 -- gitsigns word_diff toggle（LazyVim 默认未开；hunk text object ih 已是默认，无需重配）
-vim.keymap.set("n", "<leader>ghw", ":Gitsigns toggle_word_diff<CR>", { desc = "切换行内词级 diff" })  -- ghw 属 hunks 命名空间，避开 LazyVim <leader>gd（git_diff leaf）的前缀冲突
+vim.keymap.set("n", "<leader>ghw", ":Gitsigns toggle_word_diff<CR>", { desc = "切换行内词级 diff" }) -- ghw 属 hunks 命名空间，避开 LazyVim <leader>gd（git_diff leaf）的前缀冲突
 
 -- ─── Smart ESC：snacks 默认双击退，此处按 cmd 智能分流 ─────────────
 -- 普通 shell 单击 ESC 立即退，nested TUI（opencode/lazygit 等）保持双击退保护其 ESC
 local nested_tui_patterns = {
-  "opencode", "lazygit", "fzf", "sk", "htop", "top", "tig",
-  "man", "less", "more", "tmux", "vim", "nvim", "nano", "emacs",  -- 精确匹配，非子串匹配
+  "opencode",
+  "lazygit",
+  "fzf",
+  "sk",
+  "htop",
+  "top",
+  "tig",
+  "man",
+  "less",
+  "more",
+  "tmux",
+  "vim",
+  "nvim",
+  "nano",
+  "emacs", -- 精确匹配，非子串匹配
 }
 
 vim.api.nvim_create_autocmd("TermOpen", {
@@ -35,14 +47,20 @@ vim.api.nvim_create_autocmd("TermOpen", {
   callback = function(args)
     local buf = args.buf
     vim.schedule(function()
-      if not vim.api.nvim_buf_is_valid(buf) then return end
+      if not vim.api.nvim_buf_is_valid(buf) then
+        return
+      end
       local info = vim.b[buf].snacks_terminal
       -- 非 snacks.terminal（如 snacks.lazygit 自管的 win）不干预
-      if not info then return end
+      if not info then
+        return
+      end
       -- cmd 可能为 nil（`<leader>ft` 默认 shell），不命中 nested_tui_patterns
 
       local cmd = info.cmd or ""
-      if type(cmd) == "table" then cmd = cmd[1] or "" end
+      if type(cmd) == "table" then
+        cmd = cmd[1] or ""
+      end
       -- 精确匹配程序名，避免 "manager"/"task" 等子串误判
       local first = cmd:match("^%s*(%S+)") or ""
       local prog = first:match("([^/]+)$") or first
@@ -68,7 +86,10 @@ vim.keymap.set("n", "<leader>fl", function()
   local SnacksTerm = require("snacks.terminal")
   local terms = SnacksTerm.list()
   if #terms == 0 then
-    return vim.notify("没有运行中的 snacks 终端（用 <leader>ft 或 2<leader>ft 创建）", vim.log.levels.WARN)
+    return vim.notify(
+      "没有运行中的 snacks 终端（用 <leader>ft 或 2<leader>ft 创建）",
+      vim.log.levels.WARN
+    )
   end
 
   local items = {} ---@type snacks.picker.finder.Item[]
@@ -77,14 +98,22 @@ vim.keymap.set("n", "<leader>fl", function()
       local buf = win.buf
       local info = vim.b[buf].snacks_terminal or {}
       local cmd = info.cmd
-      if cmd == nil then cmd = "(shell)" end
-      if type(cmd) == "table" then cmd = table.concat(cmd, " ") end
+      if cmd == nil then
+        cmd = "(shell)"
+      end
+      if type(cmd) == "table" then
+        cmd = table.concat(cmd, " ")
+      end
       local title = vim.b[buf].term_title or ""
       local id = tostring(info.id or "?")
       local shown = win:valid() and "shown" or "hidden"
       items[#items + 1] = {
         text = ("#%s %s [%s] %s"):format(id, cmd, shown, title),
-        win = win, cmd = cmd, title = title, id = id, shown = shown,
+        win = win,
+        cmd = cmd,
+        title = title,
+        id = id,
+        shown = shown,
       }
     end
   end
@@ -106,13 +135,15 @@ vim.keymap.set("n", "<leader>fl", function()
     end,
     confirm = function(picker, item)
       picker:close()
-      if not item then return end
+      if not item then
+        return
+      end
       vim.schedule(function()
         local win = item.win
         if win and win:buf_valid() then
           win:show()
           win:focus()
-          vim.cmd.startinsert()  -- 进终端即 terminal mode
+          vim.cmd.startinsert() -- 进终端即 terminal mode
         end
       end)
     end,

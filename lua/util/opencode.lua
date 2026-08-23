@@ -19,14 +19,18 @@ M.keys = {
 local function get_oc_chan()
   if vim.bo.buftype == "terminal" and vim.api.nvim_buf_get_name(0):match("opencode") then
     local ch = vim.bo.channel
-    if ch and ch > 0 then return ch end
+    if ch and ch > 0 then
+      return ch
+    end
   end
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.bo[buf].buftype == "terminal" then
       local name = vim.api.nvim_buf_get_name(buf)
       if name:match("opencode") then
         local ch = vim.bo[buf].channel
-        if ch and ch > 0 then return ch end
+        if ch and ch > 0 then
+          return ch
+        end
       end
     end
   end
