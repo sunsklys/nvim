@@ -36,30 +36,40 @@ return {
       vim.g.mkdp_auto_close = 0 -- 关 buffer 不关浏览器
       vim.g.mkdp_echo_preview_url = 1 -- 启动时 echo URL 到 :messages
     end,
-    -- 覆盖 LazyVim <leader>cp:启动 preview 前动态选可用端口
-    -- init 时检测有 race(其他 nvim 可能抢端口),移到 keymap 触发时(server 启动前)检测
-    -- 用 nc 检测(62ms)比 lsof(168ms)快 2.7 倍且准确(libuv bind 因 SO_REUSEADDR 不适用)
+    -- 覆盖 LazyVim <leader>cp：启动 preview 前动态选可用端口
+    -- init 时检测有 race（其他 nvim 可能抢端口），移到 keymap 触发时（server 启动前）检测
+    -- libuv TCP connect 探测（与 nc -z 同语义：连接被拒 = 无监听 = 端口可用）：零 spawn 异步化，
+    -- 纯 loopback connect 延迟 μs 级；不用 bind 试接去（SO_REUSEADDR 会误判可用性）
     keys = {
       {
         "<leader>cp",
         function()
-          -- 扫描 8765-8769 取首个可用端口（多 nvim 实例不 EADDRINUSE）
-          local port = 8765
-          while port < 8770 do
-            vim.fn.system("nc -z -w1 127.0.0.1 " .. port)
-            if vim.v.shell_error ~= 0 then
-              break
-            end -- 连不上 = 端口可用
-            port = port + 1
+          local function try(port, cb)
+            if port >= 8770 then
+              return cb(8770)
+            end -- 全占用兜底：越界端口让 mkdp 报错可见
+            local sock = vim.uv.new_tcp()
+            sock:connect("127.0.0.1", port, function(err)
+              sock:close()
+              if err then
+                return cb(port)
+              end -- ECONNREFUSED = 端口可用
+              try(port + 1, cb)
+            end)
           end
-          if port == 8770 then
-            vim.notify(
-              "端口 8765-8769 均被占用，使用 8770（若启动失败请关闭旧实例）",
-              vim.log.levels.WARN
-            )
-          end
-          vim.g.mkdp_port = tostring(port)
-          vim.cmd("MarkdownPreviewToggle")
+          try(8765, function(port)
+            if port >= 8770 then
+              vim.notify(
+                "端口 8765-8769 均被占用，使用 8770（若启动失败请关闭旧实例）",
+                vim.log.levels.WARN
+              )
+            end
+            -- uv 回调是 fast event context，API/cmd 必须 schedule 回主循环安全域
+            vim.schedule(function()
+              vim.g.mkdp_port = tostring(port)
+              vim.cmd("MarkdownPreviewToggle")
+            end)
+          end)
         end,
         ft = "markdown",
         desc = "Markdown Preview",
@@ -68,14 +78,19 @@ return {
     build = function(plugin)
       require("lazy").load({ plugins = { "markdown-preview.nvim" } })
       vim.fn["mkdp#util#install"]()
-      -- patch routes.js:/^\d+$/ 路由 302 redirect 到 /page/N
+      -- patch app/routes.js：/^\d+$/ 路由 302 redirect 到 /page/N
+      -- 注意：routes.js 由 mkdp#util#install() 下载产物后才存在，patch 必须在 install 之后
       local routes_path = plugin.dir .. "/app/routes.js"
-      local f = io.open(routes_path)
+      local f = io.open(routes_path, "r")
       if not f then
-        return
+        return vim.notify("markdown-preview: app/routes.js 不存在，跳过 patch", vim.log.levels.WARN)
       end
       local content = f:read("*a")
       f:close()
+      -- 幂等短路：替换串末尾保留了查找锚点，重复 build 会叠加中间件，先检测已 patch 标记
+      if content:find("patched_short_url", 1, true) then
+        return
+      end
       local patched = content:gsub(
         "// /page/:number",
         "// patched_short_url: /N redirect 到 /page/N(client JS 解析依赖 /page/N 路径)\n"
@@ -95,7 +110,15 @@ return {
         if f2 then
           f2:write(patched)
           f2:close()
+          vim.notify("markdown-preview: routes.js patch 已应用", vim.log.levels.INFO)
+        else
+          vim.notify("markdown-preview: routes.js 写入失败，patch 未应用", vim.log.levels.WARN)
         end
+      else
+        vim.notify(
+          "markdown-preview: routes.js 锚点 '// /page/:number' 未命中，上游可能已重构，patch 跳过",
+          vim.log.levels.WARN
+        )
       end
     end,
   },
