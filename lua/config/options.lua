@@ -32,5 +32,6 @@ vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter" }, {
 -- 长行软换行视觉优化：breakindent 对齐、showbreak 前缀标识、breakat 中文标点断行
 vim.opt.breakindent = true
 -- breakat 是 global-only，影响 wrap=true 场景（markdown）；代码 wrap=false 不受影响
-vim.opt.breakat = " \t,.;:!?，。、；：！？"
+-- append 保留 nvim 默认断行字符（!@*-+;:,./?），只追加中文标点；整体赋值会丢 @ * - + / 导致 URL/路径整词甩行
+vim.opt.breakat:append("，。、；：！？")
 vim.opt.showbreak = "↳ "
