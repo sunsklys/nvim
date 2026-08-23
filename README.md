@@ -85,6 +85,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `editor/numb.lua` | numb.nvim | 输入 `:数字` 跳转时实时预览目标行（LazyVim 无内置） |
 | `editor/auto-save.lua` | okuuva/auto-save.nvim | 自动保存（noautocmd write 隔离 format_on_save，解决 undo 链断裂；`<leader>ue` 通过 Snacks.toggle 运行时 toggle） |
 | `editor/coverage.lua` | nvim-coverage | 测试覆盖率显示（配合 neotest `-cover` flag；`<leader>tL` 加载 / `<leader>tC` 切换 / `<leader>tM` 摘要） |
+| `editor/conform.lua` | conform.nvim | 全局 undojoin wrap：format 并入上一 edit 的 undo block，修复 redo 链断裂 |
 | `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开）。gofumpt/nilness/unusedparams/unusedwrite/useany LazyVim 默认已提供，本文件不重复 |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
 | `ui/baleia.lua` | baleia.nvim | log 文件 ANSI 颜色解码（`*.log`/`*.out` 自动 + `:BaleiaColorize` 手动） |
@@ -134,6 +135,20 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 > **命名空间**：OpenCode 键位使用 `<leader>a*` 命名空间（`at`=终端, `aa`=询问, `am`=模型, `ap*`=prompts, `as*`=session, `av*`=视图）。`<leader>at` 只在 normal mode 绑定，在 opencode 终端内先用 `<C-;>` 或 `<C-\><C-n>` 回到 normal 再 toggle。
 >
 > **⚠️ 命名空间冲突警告**：`<leader>a*` 与 LazyVim AI extras（avante/claudecode/copilot-chat/sidekick）共用。当前未启用这些 extras 故零冲突；若将来启用需重新规划键位。
+
+### 内置默认键位备忘（零配置，LazyVim core 已注册）
+
+高频但未在自定义表中的内置键位，备忘防遗忘：
+
+| 键 | 作用 | 来源 |
+| --- | --- | --- |
+| `<leader>co` | Go organize imports（gopls code action） | LazyVim core（v16 新增） |
+| `<leader>sR` | 全局查找替换（grug-far，跨文件搜索替换） | LazyVim core |
+| `<leader>st` | TODO/FIXME/HACK/NOTE 全项目搜索 | todo-comments（core 默认） |
+| `]m` / `[m` | Go 函数头/尾跳转（`[[`/`]]` 已被 illuminate 引用跳转占用是设计内，函数跳转正解是 ]m/[m） | nvim-treesitter-textobjects |
+| `<leader>uz` / `<leader>uZ` | Zen 模式 / Zoom toggle | LazyVim core（v14+ 默认） |
+| `<leader>wm` | 当前窗口最大化 toggle | LazyVim core |
+| `<leader>.` | snacks scratch buffer（临时笔记/计算） | snacks.nvim（core 默认） |
 
 ### 自动保存
 
@@ -244,7 +259,6 @@ iTerm2 没有等价的 Ghostty `macos-option-as-alt = true` 单行配置，需�
 | True color / 24-bit | ✅ 默认 | ✅ 默认（`termguicolors` 直接生效） |
 | OSC 0/2 标题 | ✅ | ✅ |
 
-
 ### OpenCode 配置（外部）
 
 OpenCode 的主配置（模型/MCP/permission/TUI 主题）位于 `~/.config/opencode/`，**不纳入本仓库**。关键文件：
@@ -297,7 +311,6 @@ lua/
 
 检查项：nvim 版本、lazygit/delta/prettier/rg/fd/node/python3/go、magick rock、env 注入、ripgrep/fd 用户级配置。
 
-
 ### 查看 LazyVim 最新变更
 
 ```vim
@@ -306,4 +319,3 @@ lua/
 :Lazy            “ 插件管理器（更新/同步/清理）
 ```
 
-| `editor/conform.lua` | conform.nvim | 全局 undojoin wrap：format 并入上一 edit 的 undo block，修复 redo 链断裂 |
