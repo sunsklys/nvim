@@ -12,7 +12,8 @@ vim.opt.autoread = true
 vim.o.autowrite = false
 -- 终端标签页：项目名/当前文件夹（OSC 0/2）
 vim.opt.title = true
-vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}/%{expand('%:h:t')}"
+-- 空 buffer（无文件名）时只显示项目名，避免尾部悬空斜杠
+vim.opt.titlestring = "%{fnamemodify(getcwd(),':t').(empty(expand('%'))?'':'/'.expand('%:h:t'))}"
 
 -- 不要设为 "double"：box-drawing 字符 EAW 分类为 A，设 double 会导致表格/光标错位
 vim.opt.ambiwidth = "single"
