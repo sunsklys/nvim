@@ -74,9 +74,11 @@ return {
         if vim.api.nvim_buf_get_name(buf) == "" then
           return false
         end
-        if vim.fn.pumvisible() == 1 then
+        -- 补全菜单开着不写（blink.cmp 自绘菜单不置 pumvisible，改用其 API；blink 未加载时视为无菜单）
+        local ok_blink, blink = pcall(require, "blink.cmp")
+        if ok_blink and blink.is_visible() then
           return false
-        end -- 补全菜单开着不写
+        end
         return true
       end,
       trigger_events = {
