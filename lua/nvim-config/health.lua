@@ -38,11 +38,6 @@ function M.check()
       desc = "tree-sitter CLI（LazyVim 16+ / nvim-treesitter main branch 装新 parser 需要）",
       install = "brew install tree-sitter-cli",
     },
-    {
-      cmd = "nc",
-      desc = "netcat（markdown-preview <leader>cp 端口探测；Linux 需 netcat-openbsd 变体支持 -z）",
-      install = "brew install netcat / apt install netcat-openbsd",
-    },
   }
   for _, item in ipairs(required_cmds) do
     local found = false
