@@ -33,6 +33,11 @@ function M.check()
       desc = "tree-sitter CLI（LazyVim 16+ / nvim-treesitter main branch 装新 parser 需要）",
       install = "brew install tree-sitter-cli",
     },
+    {
+      cmd = "nc",
+      desc = "netcat（markdown-preview <leader>cp 端口探测；Linux 需 netcat-openbsd 变体支持 -z）",
+      install = "brew install netcat / apt install netcat-openbsd",
+    },
   }
   for _, item in ipairs(required_cmds) do
     local found = false
@@ -50,6 +55,17 @@ function M.check()
       vim.health.ok(item.desc .. " ✓")
     else
       vim.health.warn(item.desc .. " 未安装", item.install)
+    end
+  end
+
+  -- lazygit 0.62+：`|` 两档 diff（delta 并排/单栏切换）依赖
+  if vim.fn.executable("lazygit") == 1 then
+    local lg_out = vim.fn.system("lazygit --version")
+    local lg_major, lg_minor = lg_out:match("version=(%d+)%.(%d+)")
+    if lg_major and (tonumber(lg_major) > 0 or tonumber(lg_minor) >= 62) then
+      vim.health.ok("lazygit " .. lg_major .. "." .. lg_minor .. "（≥0.62，| 两档 diff 可用）")
+    else
+      vim.health.warn("lazygit 版本 <0.62 或无法解析（| 两档 diff 不可用）", "brew upgrade lazygit")
     end
   end
 
