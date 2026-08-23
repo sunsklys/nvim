@@ -18,7 +18,12 @@ function M.check()
   local required_cmds = {
     { cmd = "lazygit", desc = "Git TUI", install = "brew install lazygit" },
     { cmd = "delta", desc = "Git diff pager（delta 并排 diff）", install = "brew install git-delta" },
-    { cmd = "prettier", desc = "Markdown/JS/TS formatter（Mason 通常会装）", install = ":MasonInstall prettier" },
+    {
+      cmd = "prettier",
+      mason = "prettier",
+      desc = "Markdown/JS/TS formatter（Mason 通常会装）",
+      install = ":MasonInstall prettier",
+    },
     { cmd = "rg", desc = "ripgrep（snacks_picker grep 搜索）", install = "brew install ripgrep" },
     { cmd = { "fd", "fdfind" }, desc = "fd（snacks_picker find_files）", install = "brew install fd" },
     { cmd = "node", desc = "Node.js（vtsls/prettier/eslint via Mason）", install = "brew install node" },
@@ -50,6 +55,12 @@ function M.check()
       end
     else
       found = vim.fn.executable(item.cmd) == 1
+    end
+    -- mason bin 兜底：checkhealth 常在空会话（dashboard）跑，LazyVim 的 mason PATH prepend
+    -- 依赖 BufReadPre（打开过文件），此时 PATH 无 mason bin，需查绝对路径
+    if not found and item.mason then
+      local p = vim.fn.stdpath("data") .. "/mason/bin/" .. item.mason
+      found = vim.fn.filereadable(p) == 1 and vim.fn.executable(p) == 1
     end
     if found then
       vim.health.ok(item.desc .. " ✓")
