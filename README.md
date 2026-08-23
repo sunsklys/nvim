@@ -89,7 +89,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
 | `ui/baleia.lua` | baleia.nvim | log 文件 ANSI 颜色解码（`*.log`/`*.out` 自动 + `:BaleiaColorize` 手动） |
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
-| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim + conform.nvim（prettier md 调优） | 表格圆角边框 + 代码块边框 + 浏览器预览（固定端口 8765，跟随系统主题）+ markdown 专属 prettier 参数（print-width=120、prose-wrap=preserve，仅 md/mdx 生效，项目本地 prettier 配置优先） |
+| `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim + conform.nvim（prettier md 调优） | 表格圆角边框 + 代码块边框 + 浏览器预览（动态端口 8765-8769 首个可用，多实例不 EADDRINUSE，跟随系统主题）+ markdown 专属 prettier 参数（print-width=120、prose-wrap=preserve，仅 md/mdx 生效，项目本地 prettier 配置优先） |
 | `ui/snacks.lua` | snacks.nvim | picker actions（含 opencode 安全过滤） + explorer 显示隐藏文件 |
 | `ui/lualine.lua` | lualine.nvim | 状态栏追加 OpenCode 状态图标（idle/busy/error/未连接） |
 | `ui/theme.lua` | tokyonight.nvim | 主题（night style） |
@@ -162,7 +162,7 @@ autosave 的 save 走 `noautocmd silent! write`，跳过 `BufWritePre` autocmd�
 
 **禁用 LazyVim autowrite**：`lua/config/options.lua` 设 `vim.o.autowrite=false`，避免 LazyVim autowrite 在切 buffer 时调原生 `:write` 触发 BufWritePre format（undo 树污染）。auto-save.nvim 的 `immediate_save` 已用 noautocmd write 覆盖 BufLeave / FocusLost / QuitPre / VimSuspend 场景，数据安全冗余不损。
 
-**历史**：原 60 行手写 autosave（per-buffer debounce timer + failure visibility）已迁移，详见 [`lua/config/autocmds.lua`](./lua/config/autocmds.lua) 顶部注释。
+**历史**：原 60 行手写 autosave（per-buffer debounce timer + failure visibility）在迁移 LazyVim 时由 [`lua/plugins/editor/auto-save.lua`](./lua/plugins/editor/auto-save.lua) 替代（noautocmd write + 错误可见性复刻）。
 
 ### 终端模式退出
 
@@ -276,12 +276,11 @@ lua/
 │   ├── env.lua         # 启动期 env 注入（luarocks + LG_CONFIG_FILE + GIT_CONFIG_*）
 │   ├── options.lua     # vim.opt 与 LazyVim g 变量（顶部 require env）
 │   ├── keymaps.lua     # 智能终端 ESC + Go 测试切换 + <leader>fl
-│   ├── autocmds.lua    # 已迁移 autosave 到 plugins/editor/auto-save.lua，当前为空（LazyVim 约定加载文件，保留 stub）
 │   └── lazy.lua        # lazy.nvim bootstrap + spec import
 ├── plugins/            # lazy.nvim 插件 specs（按目录自动合并）
 │   ├── ai/             # opencode.nvim
 │   ├── coding/         # blink.cmp
-│   ├── editor/         # coverage/diffview/numb/quickfix
+│   ├── editor/         # auto-save/conform/coverage/diffview/numb/quickfix
 │   ├── go/             # lsp + neotest
 │   └── ui/             # baleia/git/lualine/markdown/snacks/theme
 ├── util/
@@ -306,3 +305,5 @@ lua/
 :LazyExtras      “ 管理 LazyVim extras（启用/禁用/查看状态）
 :Lazy            “ 插件管理器（更新/同步/清理）
 ```
+
+| `editor/conform.lua` | conform.nvim | 全局 undojoin wrap：format 并入上一 edit 的 undo block，修复 redo 链断裂 |
