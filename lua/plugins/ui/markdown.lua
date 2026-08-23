@@ -41,11 +41,15 @@ return {
       {
         "<leader>cp",
         function()
+          -- 扫描 8765-8769 取首个可用端口（多 nvim 实例不 EADDRINUSE）
           local port = 8765
           while port < 8770 do
             vim.fn.system("nc -z -w1 127.0.0.1 " .. port)
             if vim.v.shell_error ~= 0 then break end -- 连不上 = 端口可用
             port = port + 1
+          end
+          if port == 8770 then
+            vim.notify("端口 8765-8769 均被占用，使用 8770（若启动失败请关闭旧实例）", vim.log.levels.WARN)
           end
           vim.g.mkdp_port = tostring(port)
           vim.cmd("MarkdownPreviewToggle")
@@ -58,6 +62,11 @@ return {
       require("lazy").load({ plugins = { "markdown-preview.nvim" } })
       vim.fn["mkdp#util#install"]()
       -- patch routes.js:/^\d+$/ 路由 302 redirect 到 /page/N
+      local routes_path = plugin.dir .. "/app/routes.js"
+      local f = io.open(routes_path)
+      if not f then return end
+      local content = f:read("*a")
+      f:close()
       local patched = content:gsub(
         "// /page/:number",
         "// patched_short_url: /N redirect 到 /page/N(client JS 解析依赖 /page/N 路径)\n"
