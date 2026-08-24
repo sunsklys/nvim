@@ -35,3 +35,10 @@ vim.opt.breakindent = true
 -- append 保留 nvim 默认断行字符（!@*-+;:,./?），只追加中文标点；整体赋值会丢 @ * - + / 导致 URL/路径整词甩行
 vim.opt.breakat:append("，。、；：！？")
 vim.opt.showbreak = "↳ "
+
+-- 禁用四个未用的 builtin provider：消除启动期解释器探测和 health WARNING
+-- （Python 调试走 Mason debugpy 的 DAP 通道，不经 python3 provider；folke 本人 dot 同款）
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
