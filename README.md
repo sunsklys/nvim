@@ -92,6 +92,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `ui/git.lua` | gitsigns.nvim | current_line_blame 增强 |
 | `ui/markdown.lua` | render-markdown.nvim + markdown-preview.nvim + conform.nvim（prettier md 调优） | 表格圆角边框 + 代码块边框 + 浏览器预览（动态端口 8765-8769 首个可用，多实例不 EADDRINUSE，跟随系统主题）+ markdown 专属 prettier 参数（print-width=120、prose-wrap=preserve，仅 md/mdx 生效，项目本地 prettier 配置优先） |
 | `ui/snacks.lua` | snacks.nvim | picker actions（含 opencode 安全过滤） + explorer 显示隐藏文件 |
+| `ui/noice.lua` | noice.nvim | 关闭 LSP signature 渲染（blink.cmp#2365：与 blink signature 双浮窗冲突，保 blink 自动窗） |
 | `ui/lualine.lua` | lualine.nvim | 状态栏追加 OpenCode 状态图标（idle/busy/error/未连接） |
 | `ui/theme.lua` | tokyonight.nvim | 主题（night style） |
 
@@ -318,4 +319,3 @@ lua/
 :LazyExtras      “ 管理 LazyVim extras（启用/禁用/查看状态）
 :Lazy            “ 插件管理器（更新/同步/清理）
 ```
-
