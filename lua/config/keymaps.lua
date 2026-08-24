@@ -20,7 +20,13 @@ vim.keymap.set("n", "<leader>cg", function()
 end, { desc = "Go 测试/源文件切换" })
 
 -- gitsigns word_diff toggle（LazyVim 默认未开；hunk text object ih 已是默认，无需重配）
-vim.keymap.set("n", "<leader>ghw", ":Gitsigns toggle_word_diff<CR>", { desc = "切换行内词级 diff" }) -- ghw 属 hunks 命名空间，避开 LazyVim <leader>gd（git_diff leaf）的前缀冲突
+-- 函数包装：gitsigns 走 LazyFile 加载，dashboard 阶段未加载时裸 cmd 会 E492；此时提示而非报错
+vim.keymap.set("n", "<leader>ghw", function()
+  if not package.loaded.gitsigns then
+    return vim.notify("gitsigns 未加载，先打开任意文件再切换词级 diff", vim.log.levels.WARN)
+  end
+  vim.cmd("Gitsigns toggle_word_diff")
+end, { desc = "切换行内词级 diff" }) -- ghw 属 hunks 命名空间，避开 LazyVim <leader>gd（git_diff leaf）的前缀冲突
 
 -- ─── Smart ESC：snacks 默认双击退，此处按 cmd 智能分流 ─────────────
 -- 普通 shell 单击 ESC 立即退，nested TUI（opencode/lazygit 等）保持双击退保护其 ESC
