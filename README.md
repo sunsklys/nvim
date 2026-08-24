@@ -86,6 +86,7 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `editor/auto-save.lua` | okuuva/auto-save.nvim | 自动保存（noautocmd write 隔离 format_on_save，解决 undo 链断裂；`<leader>ue` 通过 Snacks.toggle 运行时 toggle） |
 | `editor/coverage.lua` | nvim-coverage | 测试覆盖率显示（配合 neotest `-cover` flag；`<leader>tL` 加载 / `<leader>tC` 切换 / `<leader>tM` 摘要） |
 | `editor/conform.lua` | conform.nvim | 全局 undojoin wrap：format 并入上一 edit 的 undo block，修复 redo 链断裂 |
+| `editor/session.lua` | persistence.nvim 禁用 | LazyVim core 默认装但从未使用（session 目录空实证）；禁用后 <leader>qs 系列与 dashboard `s` 键优雅消失 |
 | `go/lsp.lua` | nvim-lspconfig | gopls analyses 增量：shadow（LazyVim 默认不开）。gofumpt/nilness/unusedparams/unusedwrite/useany LazyVim 默认已提供，本文件不重复 |
 | `go/neotest.lua` | neotest | neotest-golang 参数 |
 | `ui/baleia.lua` | baleia.nvim | log 文件 ANSI 颜色解码（`*.log`/`*.out` 自动 + `:BaleiaColorize` 手动） |
