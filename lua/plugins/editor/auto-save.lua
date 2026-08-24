@@ -23,7 +23,8 @@ end
 return {
   {
     "okuuva/auto-save.nvim",
-    event = "BufReadPost",
+    -- BufNewFile：覆盖 nvim new.go 冷启动的新建文件（插件加载前无 autosave 的窗口期）
+    event = { "BufReadPost", "BufNewFile" },
     config = function(_, opts)
       require("auto-save").setup(opts)
       warn_if_save_failed()
