@@ -12,8 +12,9 @@ vim.opt.autoread = true
 vim.o.autowrite = false
 -- 终端标签页：项目名/当前文件夹（OSC 0/2）
 vim.opt.title = true
--- 空 buffer（无文件名）时只显示项目名，避免尾部悬空斜杠
-vim.opt.titlestring = "%{fnamemodify(getcwd(),':t').(empty(expand('%'))?'':'/'.expand('%:h:t'))}"
+-- 空 buffer（无文件名）时只显示项目名；目录段用 :. 先转 cwd 相对路径，
+-- 避免绝对路径打开时目录段重复项目名（proj/proj）；根目录文件目录段为 "." 时回退纯项目名（避免 proj/.）
+vim.opt.titlestring = "%{fnamemodify(getcwd(),':t').(empty(expand('%'))?'':(fnamemodify(expand('%'),':.:h:t')=='.'?'':'/'.fnamemodify(expand('%'),':.:h:t')))}"
 
 -- 不要设为 "double"：box-drawing 字符 EAW 分类为 A，设 double 会导致表格/光标错位
 vim.opt.ambiwidth = "single"
