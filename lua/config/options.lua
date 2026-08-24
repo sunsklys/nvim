@@ -29,11 +29,11 @@ vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter" }, {
   end,
 })
 
--- 长行软换行视觉优化：breakindent 对齐、showbreak 前缀标识、breakat 中文标点断行
+-- 长行软换行视觉优化：breakindent 对齐、showbreak 前缀标识
 vim.opt.breakindent = true
 -- breakat 是 global-only，影响 wrap=true 场景（markdown）；代码 wrap=false 不受影响
--- append 保留 nvim 默认断行字符（!@*-+;:,./?），只追加中文标点；整体赋值会丢 @ * - + / 导致 URL/路径整词甩行
-vim.opt.breakat:append("，。、；：！？")
+-- 中文标点断行不可行：nvim 官方文档明文 breakat "Only works for ASCII characters"，append 无效已删
+-- 默认断行字符（!@*-+;:,./?）保持不动，URL/路径整词不甩行
 vim.opt.showbreak = "↳ "
 
 -- 禁用四个未用的 builtin provider：消除启动期解释器探测和 health WARNING
