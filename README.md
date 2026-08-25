@@ -296,9 +296,9 @@ lua/
 ├── plugins/            # lazy.nvim 插件 specs（按目录自动合并）
 │   ├── ai/             # opencode.nvim
 │   ├── coding/         # blink.cmp
-│   ├── editor/         # auto-save/conform/coverage/diffview/numb/quickfix
+│   ├── editor/         # auto-save/conform/coverage/diffview/numb/quickfix/session
 │   ├── go/             # lsp + neotest
-│   └── ui/             # baleia/git/lualine/markdown/snacks/theme
+│   └── ui/             # baleia/git/lualine/markdown/noice/snacks/theme
 ├── util/
 │   └── opencode.lua    # OpenCode PTY helpers（OC_KEYS/tui_send/tscroll）
 └── nvim-config/

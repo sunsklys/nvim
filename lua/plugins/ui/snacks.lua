@@ -97,7 +97,6 @@ local function has_token(text)
   -- 高熵 hex 串（≥40 连续十六进制位，覆盖 sha 型以外的纯 hex 密钥）：
   -- 注意 base64 密钥（如 AWS Secret Key 含 /+）不在覆盖内，靠 TOKEN_PATTERNS 前缀层（AKIA）兜底；
   -- 须同时命中凭证上下文关键字才拦（git sha 不误报，误拦代价=跳过+WARN）
-  -- 须同时命中凭证上下文关键字才拦（sha 型内容不误报，误拦代价=跳过+WARN）
   local lower = text:lower()
   for _, hint in ipairs(CRED_HINTS) do
     if lower:find(hint, 1, true) then
