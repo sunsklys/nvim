@@ -224,7 +224,7 @@ autosave 的 save 走 `noautocmd silent! write`，跳过 `BufWritePre` autocmd�
 
 - **True color / 24-bit**：LazyVim 默认 `termguicolors = true`，Ghostty 原生支持
 - **Undercurl / underline styles**：Neovim 0.10+ 原生发 SGR 4:0-4:5 序列，Ghostty 原生渲染（诊断下划线）
-- **Kitty graphics protocol**：`snacks.image` 已启用，markdown 图片在 Ghostty 内 inline 渲染（不支持的终端优雅降级）
+- **Kitty graphics protocol**：`snacks.image` 已启用，markdown 图片在 Ghostty 内 inline 渲染（全格式需 `magick` rock，未装时仅 PNG；不支持的终端优雅降级）
 - **Kitty keyboard protocol**：Neovim 0.11+ `keyprotocol = "auto"`（DA1 probe），Ghostty 自动响应。`<C-S-Up>` 与 `<C-Up>` 可区分。验证：`:lua =vim.opt.keyprotocol:get()` 返回 `"auto"`
 - **OSC 0/2 标题**：`vim.opt.title = true` + `titlestring`，Ghostty 正常显示项目名/路径
 - **`macos-option-as-alt = true`**：Ghostty 配置中需开启此项，`<a-a>` 等 Alt 组合键才能被 Neovim 正确接收
@@ -255,7 +255,7 @@ iTerm2 没有等价的 Ghostty `macos-option-as-alt = true` 单行配置，需�
 
 | 特性 | Ghostty | iTerm2 |
 | --- | --- | --- |
-| Kitty graphics protocol | ✅ 原生（`snacks.image` 全格式 inline 渲染） | ❌ 不支持（仅 PNG fallback，且需 `magick` rock） |
+| Kitty graphics protocol | ✅ 原生（`snacks.image` 全格式 inline 渲染，全格式需 `magick` rock） | ❌ 不支持（仅 PNG fallback，且需 `magick` rock） |
 | Styled underlines | ✅ 原生 | ⚠️ 部分（curly/dotted/dashed 降级为基础下划线） |
 | Theme 一行配置 | `theme = TokyoNight Night` | 需 GUI 导入 `.itermcolors`（无 config 文件） |
 | True color / 24-bit | ✅ 默认 | ✅ 默认（`termguicolors` 直接生效） |
