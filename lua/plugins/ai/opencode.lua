@@ -30,7 +30,7 @@ end
 return {
   {
     "nickjvandyke/opencode.nvim",
-    -- 不设 version：lazy-lock.json 锁定 commit，防 pre-1.0 tag breaking 升级
+    -- 不设 version：lazy-lock.json 锁定 commit（上游已发 1.0.0+，升级走 lock 显式 diff 审查）
     dependencies = { "folke/snacks.nvim" },
     config = function()
       ---@type opencode.Opts
