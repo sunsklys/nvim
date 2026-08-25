@@ -25,6 +25,15 @@ end
 ensure_in_lg_config(vim.fn.expand("$HOME/.config/nvim/lazygit.yml"))
 ensure_in_lg_config(vim.fn.expand("$HOME/.local/share/nvim/lazy/tokyonight.nvim/extras/lazygit/tokyonight_night.yml"))
 
+-- rg 无 XDG 默认配置路径（只认 RIPGREP_CONFIG_PATH），此处幂等注入确保 snacks picker 的 rg 子进程读全局忽略
+-- 命令行侧需 ~/.zshrc 自行 export（README「ripgrep + fd 全局忽略」段落记载）
+if not vim.env.RIPGREP_CONFIG_PATH then
+  local rg_config = vim.fn.expand("$HOME/.config/ripgrep/config")
+  if vim.fn.filereadable(rg_config) == 1 then
+    vim.env.RIPGREP_CONFIG_PATH = rg_config
+  end
+end
+
 -- 不写 ~/.gitconfig（不随 dotfiles 迁移），改用 GIT_CONFIG_* 环境变量注入 git 中文 Date
 local function set_git_config(key, value)
   local count = tonumber(vim.env.GIT_CONFIG_COUNT or "0") or 0

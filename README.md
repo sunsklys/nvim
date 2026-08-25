@@ -27,10 +27,10 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 
 **ripgrep + fd 全局忽略**（影响命令行搜索 + nvim 内 snacks_picker/fzf-lua 的 picker 结果）：
 
-- `~/.config/ripgrep/config` —— `rg` 自动跳过 `.git/node_modules/dist/build/.next/target/__pycache__/.venv/vendor`，开 smart-case + 150 列截断
-- `~/.config/fd/ignore` —— `fd` 同步忽略上述目录
+- `~/.config/ripgrep/config` —— `rg` 跳过 `.git/node_modules/dist/build/.next/target/__pycache__/.venv/vendor`，开 smart-case + 150 列截断。生效机制：rg 无 XDG 默认路径（只认 `RIPGREP_CONFIG_PATH` 环境变量）——nvim 内由 `lua/config/env.lua` 幂等注入；命令行侧需在 `~/.zshrc` 自行 `export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"`
+- `~/.config/fd/ignore` —— `fd` 同步忽略上述目录（fd 原生默认读此路径，无需环境变量）
 
-这两个是用户级开发工具配置（与 `~/.gitconfig` 同级），不随 dotfiles 仓库迁移，需手动写入或用脚本生成。换电脑后直接 `cp` 这两个文件即可。
+这两个是用户级开发工具配置（与 `~/.gitconfig` 同级），不随 dotfiles 仓库迁移，需手动写入或用脚本生成。换电脑后直接 `cp` 这两个文件，再在 `~/.zshrc` 补上述 `RIPGREP_CONFIG_PATH` export 即可。
 
 ### 功能
 
