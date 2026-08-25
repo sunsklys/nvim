@@ -14,13 +14,16 @@ return {
         group = vim.api.nvim_create_augroup("baleia", { clear = true }),
         pattern = { "*.log", "*.out" },
         callback = function(args)
+          -- once 先给存量行上色（automatically 只管后续变更），再挂 streaming
+          baleia.once(args.buf)
           baleia.automatically(args.buf)
         end,
       })
 
-      -- 兜底：lazy 加载时 BufRead autocmd 尚未注册，手动触发
+      -- 兑底：lazy 加载时 BufRead autocmd 尚未注册，手动触发（once 补存量行）
       local cur = vim.api.nvim_buf_get_name(0)
       if cur:match("%.log$") or cur:match("%.out$") then
+        baleia.once(0)
         baleia.automatically(0)
       end
     end,

@@ -14,7 +14,8 @@ vim.o.autowrite = false
 vim.opt.title = true
 -- 空 buffer（无文件名）时只显示项目名；目录段用 :. 先转 cwd 相对路径，
 -- 避免绝对路径打开时目录段重复项目名（proj/proj）；根目录文件目录段为 "." 时回退纯项目名（避免 proj/.）
-vim.opt.titlestring = "%{fnamemodify(getcwd(),':t').(empty(expand('%'))?'':(fnamemodify(expand('%'),':.:h:t')=='.'?'':'/'.fnamemodify(expand('%'),':.:h:t')))}"
+vim.opt.titlestring =
+  "%{fnamemodify(getcwd(),':t').(empty(expand('%'))?'':(fnamemodify(expand('%'),':.:h:t')=='.'?'':'/'.fnamemodify(expand('%'),':.:h:t')))}"
 
 -- 不要设为 "double"：box-drawing 字符 EAW 分类为 A，设 double 会导致表格/光标错位
 vim.opt.ambiwidth = "single"
@@ -22,7 +23,8 @@ vim.opt.ambiwidth = "single"
 -- 自适应窗口高度：大窗口 8 行，窄分屏 3 行
 vim.opt.scrolloff = 3
 -- 不用 BufEnter：scrolloff 只依赖窗口高度，切 buffer 不改高度，BufEnter 是冗余触发
-vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter" }, {
+-- VimEnter：启动首屏到首次 WinEnter 之间也立即对齐 8/3，避免首屏 scrolloff 漂移
+vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "WinEnter", "VimEnter" }, {
   group = vim.api.nvim_create_augroup("AdaptiveScrolloff", { clear = true }),
   callback = function()
     local h = vim.api.nvim_win_get_height(0)

@@ -7,6 +7,8 @@ vim.keymap.set("n", "<leader>cg", function()
     local source = base .. ".go"
     if vim.fn.filereadable(source) == 1 then
       vim.cmd.edit(vim.fn.fnameescape(source))
+    else
+      vim.notify("未找到对应源文件：" .. source, vim.log.levels.INFO)
     end
   else
     local candidates = { base .. "_test.go", base .. "_internal_test.go" }
@@ -16,6 +18,7 @@ vim.keymap.set("n", "<leader>cg", function()
         return
       end
     end
+    vim.notify("未找到测试文件（尝试过 " .. table.concat(candidates, "、") .. "）", vim.log.levels.INFO)
   end
 end, { desc = "Go 测试/源文件切换" })
 
