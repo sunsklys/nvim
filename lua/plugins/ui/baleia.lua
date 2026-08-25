@@ -21,7 +21,7 @@ return {
       })
 
       -- 兑底：lazy 加载后会重放 BufRead 事件给上面的 autocmd（once 在那里跑）；
--- 此处不可 once：会先把 ANSI strip 掉，重放的 once 拿到无色文本 → 清空 extmark 且无法重建
+      -- 此处不可 once：会先把 ANSI strip 掉，重放的 once 拿到无色文本 → 清空 extmark 且无法重建
       local cur = vim.api.nvim_buf_get_name(0)
       if cur:match("%.log$") or cur:match("%.out$") then
         baleia.automatically(0)
