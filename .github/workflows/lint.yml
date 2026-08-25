@@ -9,9 +9,9 @@ jobs:
   stylua:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: JohnnyMorganz/stylua-action@v4
+      - uses: actions/checkout@v7
+      - uses: JohnnyMorganz/stylua-action@v5
         with:
           version: 2.5.2 # 钉住：latest 曾因 2.5.2 格式变更致 CI 红（单行 if 展开等）；升级需本地同步重跑 stylua
-          token: ${{ github.token }} # action v4 新版必传：无 token 时下载 release 报 opts.auth is required
+          token: ${{ github.token }} # action v4+ 必传：无 token 时下载 release 报 opts.auth is required
           args: --check lua/
