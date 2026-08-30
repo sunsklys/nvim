@@ -26,8 +26,11 @@ return {
     -- BufNewFile：覆盖 nvim new.go 冷启动的新建文件（插件加载前无 autosave 的窗口期）
     event = { "BufReadPost", "BufNewFile" },
     -- dashboard 阶段插件未加载（BufReadPost 未触发），<leader>ue 曾静默无响应；
-    -- keys 占位让 lazy.nvim 首按即加载（同 c4b591b ghw 先例的立法思路）
-    keys = { { "<leader>ue", desc = "Toggle Auto Save" } },
+    -- keys 带 rhs 让 lazy.nvim 首按即加载并执行 ASToggle，加载后 handler 以 rhs 重建映射。
+    -- 注意不能只用 desc 占位：lazy 的 managed 表只增不减，LazyVim 的 safe_keymap_set
+    -- 检测到 handler 占有该键时会静默跳过，config 里 Snacks.toggle:map 永远建不起来，
+    -- 首按后占位又被 _del（无 rhs 不重建）→ 键位永久失效（review QA 实测回归）
+    keys = { { "<leader>ue", "<cmd>ASToggle<cr>", desc = "Toggle Auto Save" } },
     config = function(_, opts)
       require("auto-save").setup(opts)
       warn_if_save_failed()
