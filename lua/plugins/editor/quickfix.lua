@@ -11,25 +11,13 @@ return {
         -- nvim-bqf 用 border 字段，原 border_chars 是无效 key 被静默忽略
         border = { "━", "┓", "┃", "┛", "━", "┗", "┃", "┏" },
       },
+      -- 只保留真自定义 4 键；其余 14 键与 bqf 上游默认逐字相同（bqf config.lua:26-52），
+      -- lazy opts deep-merge 下删去后行为不变（未覆盖的键继承默认）
       func_map = {
-        open = "<CR>",
-        tab = "t",
-        split = "<C-x>",
-        vsplit = "<C-v>",
-        pscrollup = "<C-U>",
-        pscrolldown = "<C-D>",
-        ptoggleitem = "p",
-        ptoggleauto = "P",
-        ptogglemode = "zp",
-        filter = "zn",
-        filterr = "zN",
-        sclear = "z<Space>",
-        stogglebuf = "<Tab>",
-        stogglevm = "<Space>",
-        prevfile = "<C-p>",
-        nextfile = "<C-n>",
-        prevhist = "<",
-        nexthist = ">",
+        pscrollup = "<C-U>", -- 默认 <C-b>，对齐 Vim 滚动语义
+        pscrolldown = "<C-D>", -- 默认 <C-f>
+        sclear = "z<Space>", -- 默认 z<Tab>，避开 stogglebuf 的 <Tab>
+        stogglevm = "<Space>", -- 默认 <Tab>，visual 模式选中标记
       },
     },
   },

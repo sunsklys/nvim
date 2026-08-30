@@ -59,11 +59,8 @@ return {
       end)
     end,
     opts = {
-      enabled = true,
-      debounce_delay = 1000,
       noautocmd = true, -- ★ 核心：跳过 BufWritePre format，autosave 只落盘原始内容
       lockmarks = true,
-      write_all_buffers = false,
       condition = function(buf)
         if not vim.api.nvim_buf_is_valid(buf) then
           return false
@@ -85,11 +82,8 @@ return {
         end
         return true
       end,
-      trigger_events = {
-        immediate_save = { "BufLeave", "FocusLost", "QuitPre", "VimSuspend" },
-        defer_save = { "InsertLeave", "TextChanged" },
-        cancel_deferred_save = { "InsertEnter" },
-      },
+      -- enabled/debounce_delay(1000)/write_all_buffers/trigger_events 均为官方默认值，不重复配置；
+      -- 触发事件语义见 README「自动保存」节（immediate: BufLeave/FocusLost/QuitPre/VimSuspend 等）
     },
   },
 }

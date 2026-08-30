@@ -3,10 +3,6 @@ return {
   {
     "nacro90/numb.nvim",
     keys = ":",
-    opts = {
-      show_numbers = true,
-      show_cursorline = true,
-      number_only = false,
-    },
+    -- opts 三项（show_numbers/show_cursorline/number_only）均为上游默认值，不覆盖
   },
 }
