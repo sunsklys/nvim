@@ -15,20 +15,39 @@ M.keys = {
   last = "\x1b\x07",
 }
 
--- 查找 OpenCode 终端的 PTY channel
+-- 终端 buffer 是否为 opencode TUI
+-- name 格式 term://{cwd}//{pid}:{cmd}：宽松 match("opencode") 会误中 cwd 含
+-- opencode 的普通 shell（如 ~/.config/opencode 下 <leader>ft），收紧为仅 cmd 段命中
+---@param name string
+---@return boolean
+function M.is_oc_name(name)
+  -- pid 前是斜杠（//{pid}:{cmd}），匹配 cmd 段的 /pid:opencode 而非 cwd 子串
+  return name:match("/%d+:opencode") ~= nil
+end
+
+-- channel 是否存活：进程退出后 vim.bo.channel 残留旧 id，jobwait 返回 -1 表示仍在运行
+-- （对已释放 job 调 jobwait 会抛错，pcall 兜底视为已死）
+local function chan_alive(ch)
+  local ok, res = pcall(vim.fn.jobwait, { ch }, 0)
+  return ok and res[1] == -1
+end
+
+-- 查找 opencode 终端的 PTY channel（只返回存活实例）
+-- 多实例场景（snacks tid 含 cwd，root 切换后可能分裂第二实例）按 bufid 升序
+-- 遍历会先撞到已退出的旧实例，死实例直接跳过
 local function get_oc_chan()
-  if vim.bo.buftype == "terminal" and vim.api.nvim_buf_get_name(0):match("opencode") then
+  if vim.bo.buftype == "terminal" and M.is_oc_name(vim.api.nvim_buf_get_name(0)) then
     local ch = vim.bo.channel
-    if ch and ch > 0 then
+    if ch and ch > 0 and chan_alive(ch) then
       return ch
     end
   end
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.bo[buf].buftype == "terminal" then
       local name = vim.api.nvim_buf_get_name(buf)
-      if name:match("opencode") then
+      if M.is_oc_name(name) then
         local ch = vim.bo[buf].channel
-        if ch and ch > 0 then
+        if ch and ch > 0 and chan_alive(ch) then
           return ch
         end
       end
@@ -38,12 +57,12 @@ end
 
 ---通过 PTY 直接发送字节
 ---@param bytes string
----@return boolean sent 是否成功发送（false = 找不到 OpenCode 终端）
+---@return boolean sent 是否成功发送（false = 找不到存活终端或进程已退出）
 function M.tui_send(bytes)
   local ch = get_oc_chan()
   if ch then
-    vim.api.nvim_chan_send(ch, bytes)
-    return true
+    -- 存活检查与发送之间进程仍可能退出（chan_send 对关闭流抛错），pcall 双保险
+    return pcall(vim.api.nvim_chan_send, ch, bytes)
   end
   return false
 end

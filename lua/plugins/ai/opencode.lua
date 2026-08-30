@@ -70,7 +70,8 @@ return {
             return
           end
           local name = vim.api.nvim_buf_get_name(args.buf)
-          if not name:match("opencode") then
+          -- 精确匹配 cmd 段：宽松 match("opencode") 会误中 cwd 含 opencode 的 shell
+          if not oc.is_oc_name(name) then
             return
           end
           vim.b[args.buf].oc_scroll = true
