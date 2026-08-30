@@ -25,6 +25,9 @@ return {
     "okuuva/auto-save.nvim",
     -- BufNewFile：覆盖 nvim new.go 冷启动的新建文件（插件加载前无 autosave 的窗口期）
     event = { "BufReadPost", "BufNewFile" },
+    -- dashboard 阶段插件未加载（BufReadPost 未触发），<leader>ue 曾静默无响应；
+    -- keys 占位让 lazy.nvim 首按即加载（同 c4b591b ghw 先例的立法思路）
+    keys = { { "<leader>ue", desc = "Toggle Auto Save" } },
     config = function(_, opts)
       require("auto-save").setup(opts)
       warn_if_save_failed()

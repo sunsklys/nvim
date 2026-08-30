@@ -38,6 +38,11 @@ function M.check()
       desc = "tree-sitter CLI（LazyVim 16+ / nvim-treesitter main branch 装新 parser 需要）",
       install = "brew install tree-sitter-cli",
     },
+    {
+      cmd = "opencode",
+      desc = "OpenCode CLI（<leader>a* 全部功能 + lualine 状态图标）",
+      install = "brew install opencode",
+    },
   }
   for _, item in ipairs(required_cmds) do
     local found = false
