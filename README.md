@@ -300,7 +300,7 @@ lua/
 │   ├── go/             # lsp + neotest
 │   └── ui/             # baleia/git/lualine/markdown/noice/snacks/theme
 ├── util/
-│   └── opencode.lua    # OpenCode PTY helpers（OC_KEYS/tui_send/tscroll）
+│   └── opencode.lua    # OpenCode PTY helpers（keys/tui_send/tsnd_warn/tscroll/is_oc_name）
 └── nvim-config/
     └── health.lua      # 自定义 health check（:checkhealth nvim-config）
 ```
@@ -311,7 +311,7 @@ lua/
 :checkhealth nvim-config    
 ```
 
-检查项：nvim 版本、lazygit/delta/prettier/rg/fd/node/python3/go、magick rock、env 注入、ripgrep/fd 用户级配置。
+检查项：nvim 版本、lazygit/delta/prettier/rg/fd/node/python3/go/tree-sitter/opencode、magick rock、env 注入、ripgrep/fd 用户级配置。
 
 ### 查看 LazyVim 最新变更
 

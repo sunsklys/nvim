@@ -16,17 +16,18 @@ M.keys = {
 }
 
 -- 终端 buffer 是否为 opencode TUI
--- name 格式 term://{cwd}//{pid}:{cmd}：宽松 match("opencode") 会误中 cwd 含
--- opencode 的普通 shell（如 ~/.config/opencode 下 <leader>ft），收紧为仅 cmd 段命中
+-- name 格式 term://{cwd}//{pid}:{cmd}：提取 cmd 段首词比对 basename，
+-- 拒绝 cwd 子串误中（如 ~/.config/opencode 下的 shell、/数字:opencode 形态目录）
+-- 与后缀变体（opencode.sh/opencode-remote），并兼容绝对路径启动
 ---@param name string
 ---@return boolean
 function M.is_oc_name(name)
-  -- pid 前是斜杠（//{pid}:{cmd}），匹配 cmd 段的 /pid:opencode 而非 cwd 子串
-  return name:match("/%d+:opencode") ~= nil
+  local prog = name:match("term://.-//%d+:(%S+)")
+  return prog ~= nil and prog:match("[^/]+$") == "opencode"
 end
 
--- channel 是否存活：进程退出后 vim.bo.channel 残留旧 id，jobwait 返回 -1 表示仍在运行
--- （对已释放 job 调 jobwait 会抛错，pcall 兜底视为已死）
+-- channel 是否存活：jobwait 返回 -1 表示仍在运行；进程退出/已释放的 job 一律返回 -3，
+-- pcall 仅作 vim.fn 层异常兆底（如同名参数类型错误）
 local function chan_alive(ch)
   local ok, res = pcall(vim.fn.jobwait, { ch }, 0)
   return ok and res[1] == -1
