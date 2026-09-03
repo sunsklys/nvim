@@ -47,13 +47,6 @@ return {
         desc = "Run Last (with save)",
       },
       {
-        "<leader>td",
-        with_save(function()
-          require("neotest").run.run({ strategy = "dap" })
-        end),
-        desc = "Debug Nearest (with save)",
-      },
-      {
         "<leader>tw",
         with_save(function()
           require("neotest").watch.toggle(vim.fn.expand("%"))

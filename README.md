@@ -66,13 +66,13 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 
 ## 启用的 LazyVim extras 与自定义插件
 
-### LazyVim extras（26 个，见 [`lazyvim.json`](./lazyvim.json)）
+### LazyVim extras（22 个，见 [`lazyvim.json`](./lazyvim.json)）
 
 **语言**: lang.go / lang.markdown / lang.typescript / lang.json / lang.yaml / lang.docker / lang.git / lang.python / lang.toml
 
-**编辑器**: editor.snacks_explorer / editor.snacks_picker / editor.inc-rename / editor.dial / editor.outline / editor.illuminate / editor.refactoring
+**编辑器**: editor.snacks_explorer / editor.snacks_picker / editor.inc-rename / editor.dial / editor.outline / editor.illuminate
 
-**编码/UI/工具**: coding.mini-surround / coding.yanky / coding.neogen / ui.treesitter-context / linting.eslint / dap.core / test.core / formatting.prettier / util.mini-hipatterns / util.rest
+**编码/UI/工具**: coding.mini-surround / coding.yanky / ui.treesitter-context / linting.eslint / test.core / formatting.prettier / util.mini-hipatterns
 
 ### 自定义插件（`lua/plugins/`）
 
@@ -128,7 +128,6 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | `<leader>tL/tC/tM` | 加载覆盖率文件 / 切换覆盖率显示 / 摘要窗（配合 neotest `-cover`） | editor/coverage.lua |
 | `<leader>cp` | Markdown 浏览器预览 | LazyVim lang.markdown extra |
 | `<leader>ue` | 切换全局 autosave（通过 Snacks.toggle，状态在 picker 可见；e 避开 treesitter-context 占用的 ut） | editor/auto-save.lua |
-| `<leader>cn` | 生成 Go/Python docstring 模板（neogen） | LazyVim neogen extra |
 | `<a-a>` | 在 snacks picker 中把选中项发给 OpenCode（含密钥安全过滤） | ui/snacks.lua |
 | `<leader>fl` | 列出运行中的 snacks 终端，选中 focus | config/keymaps.lua |
 | `<C-;>` | 终端模式单击立即退（兑底键，强制绕过 nested TUI 的双击 ESC 保护） | config/keymaps.lua |
