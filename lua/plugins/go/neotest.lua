@@ -55,4 +55,10 @@ return {
       },
     },
   },
+  {
+    -- test.core 把 Debug Nearest 挂在 nvim-dap 的 keys 上（extras/test/core.lua:122-127），
+    -- 禁用须对 dap spec 下手：dap.core 已摘，不禁用时 <leader>td 露出调 nvim-dap 报错
+    "mfussenegger/nvim-dap",
+    keys = { { "<leader>td", false } },
+  },
 }
