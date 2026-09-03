@@ -144,6 +144,11 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 | 键 | 作用 | 来源 |
 | --- | --- | --- |
 | `<leader>co` | Go organize imports（gopls code action） | LazyVim core（v16 新增） |
+| `<leader>gD` | 对分支/PR merge base 做 diff | snacks.picker（v15.11） |
+| `gai` / `gao` | 调用层级跳转（incoming/outgoing calls） | snacks.picker（v15.11，LSP attach 后） |
+| `<leader>bi` | 删除所有 invisible buffers | LazyVim core（v16 新增） |
+| `<leader>bj` | BufferLinePick（buffer 快速选择） | LazyVim core（v15.14） |
+| `<localleader>r` | 运行选中/当前文件 Lua | LazyVim core（v15.12，ft=lua） |
 | `<leader>sR` | 全局查找替换（grug-far，跨文件搜索替换） | LazyVim core |
 | `<leader>st` | TODO/FIXME/HACK/NOTE 全项目搜索 | todo-comments（core 默认） |
 | `]m` / `[m` | Go 函数头/尾跳转（`[[`/`]]` 已被 illuminate 引用跳转占用是设计内，函数跳转正解是 ]m/[m） | nvim-treesitter-textobjects |
@@ -280,7 +285,7 @@ brew install lazygit git-delta neovim python3 go node imagemagick pkg-config lua
 - `go` 用于 lang.go extra（gopls/delve/gofumpt 等通过 Mason 自动装）
 - `node` 用于 lang.typescript extra（vtsls/prettier/eslint 通过 Mason 自动装）
 - `lazygit` + `git-delta` 用于 Git 工作流（diff/merge/lazygit 集成）
-- `neovim` 0.11.2+（实测 0.12.3，LazyVim v15 强制要求 0.11.2）
+- `neovim` 0.11.2+（实测 0.12.3，当前 LazyVim v16）
 - `imagemagick` + `pkg-config` + `luarocks` + `magick` rock：snacks.image 全格式图片渲染（Ghostty Kitty graphics protocol；无 magick 仅 PNG 可用）
 
 ### 项目结构与 health check
