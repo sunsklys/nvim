@@ -87,6 +87,9 @@ return {
       end
       local content = f:read("*a")
       f:close()
+      -- skip-worktree 固化（幂等）：补丁让 git status 永远 dirty，lazy 更新会报 local changes；
+      -- 标记后 status 无视该文件。放幂等短路之前：x+I 重装场景补丁已打但标记丢失，build 重跑时在此补标
+      vim.fn.system({ "git", "-C", plugin.dir, "update-index", "--skip-worktree", "app/routes.js" })
       -- 幂等短路：替换串末尾保留了查找锚点，重复 build 会叠加中间件，先检测已 patch 标记
       if content:find("patched_short_url", 1, true) then
         return
@@ -110,7 +113,10 @@ return {
         if f2 then
           f2:write(patched)
           f2:close()
-          vim.notify("markdown-preview: routes.js patch 已应用", vim.log.levels.INFO)
+          -- skip-worktree：patch 写入被 lazy update 视为脏文件阻断更新，git 层忽略后畅通；
+          -- 上游重构时幂等锚点不命中会 WARN 提示（重装后 build 重新 patch）
+          vim.fn.system({ "git", "-C", plugin.dir, "update-index", "--skip-worktree", "app/routes.js" })
+          vim.notify("markdown-preview: routes.js patch 已应用（skip-worktree）", vim.log.levels.INFO)
         else
           vim.notify("markdown-preview: routes.js 写入失败，patch 未应用", vim.log.levels.WARN)
         end
