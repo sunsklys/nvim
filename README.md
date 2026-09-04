@@ -66,9 +66,9 @@ lazygit 中查看 commit 详情（patch 顶部 `Date:` 字段）走的是 `git s
 
 ## 启用的 LazyVim extras 与自定义插件
 
-### LazyVim extras（22 个，见 [`lazyvim.json`](./lazyvim.json)）
+### LazyVim extras（26 个，见 [`lazyvim.json`](./lazyvim.json)）
 
-**语言**: lang.go / lang.markdown / lang.typescript / lang.json / lang.yaml / lang.docker / lang.git / lang.python / lang.toml
+**语言**: lang.go / lang.markdown / lang.typescript / lang.json / lang.yaml / lang.docker / lang.git / lang.python / lang.toml / lang.cmake / lang.rust / lang.sql / lang.vue
 
 **编辑器**: editor.snacks_explorer / editor.snacks_picker / editor.inc-rename / editor.dial / editor.outline / editor.illuminate
 
