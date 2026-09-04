@@ -285,7 +285,7 @@ brew install lazygit git-delta neovim python3 go node imagemagick pkg-config lua
 - `go` 用于 lang.go extra（gopls/delve/gofumpt 等通过 Mason 自动装）
 - `node` 用于 lang.typescript extra（vtsls/prettier/eslint 通过 Mason 自动装）
 - `lazygit` + `git-delta` 用于 Git 工作流（diff/merge/lazygit 集成）
-- `neovim` 0.11.2+（实测 0.12.3，当前 LazyVim v16）
+- `neovim` 0.11.2+（实测 0.12.5，当前 LazyVim v16）
 - `imagemagick` + `pkg-config` + `luarocks` + `magick` rock：snacks.image 全格式图片渲染（Ghostty Kitty graphics protocol；无 magick 仅 PNG 可用）
 
 ### 项目结构与 health check
